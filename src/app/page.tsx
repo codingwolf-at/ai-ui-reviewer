@@ -8,12 +8,17 @@ export default function Home() {
     const [code, setCode] = useState("");
     const [loading, setLoading] = useState(false);
     const [result, setResult] = useState<ReviewResult | null>(null);
+    const [error, setError] = useState<string | null>(null);
 
     const handleInput = async () => {
         setLoading(true);
+        setError(null);
+        setResult(null);
         const response = await getAIResponse(code);
         if (response) {
             setResult(response);
+        } else {
+            setError("Failed to analyze UI. Please try again.");
         }
         setLoading(false);
     };
@@ -71,6 +76,11 @@ export default function Home() {
                 {!loading && !result && (
                     <p className="text-sm text-gray-500 italic">
                         No review yet
+                    </p>
+                )}
+                {error && (
+                    <p className="text-sm text-red-400">
+                        {error}
                     </p>
                 )}
             </section>
