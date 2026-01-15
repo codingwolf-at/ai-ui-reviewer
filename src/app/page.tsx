@@ -1,17 +1,25 @@
-"use client"
-import CodeInput from "@/components/CodeInput";
+"use client";
 import { useState } from "react";
+import CodeInput from "@/components/CodeInput";
+import { getAIResponse } from "@/lib/api/review";
+import { ReviewResult } from "@/types/review";
 
 export default function Home() {
     const [code, setCode] = useState("");
     const [loading, setLoading] = useState(false);
+    const [result, setResult] = useState<ReviewResult | null>(null);
 
-    const handleInput = () => {
+    const handleInput = async () => {
         setLoading(true);
-        setTimeout(() => {
-            setLoading(false);
-        }, 3000)
-    }
+        const response = await getAIResponse(code);
+        if (response) {
+            setResult(response);
+        }
+        setLoading(false);
+    };
+
+    // TODO: disable button if no change in code after API call
+    // TODO: add support for dark/light mode
 
     return (
         <main className="max-w-4xl mx-auto p-6 space-y-8 min-h-screen">
@@ -38,14 +46,31 @@ export default function Home() {
             </section>
 
             {/* AI Output */}
-            <section className="rounded-md border border-gray-800 bg-gray-900 p-4">
-                {code.trim().length > 0 ? (
-                    <pre className="text-sm text-gray-100 whitespace-pre-wrap break-words font-mono">
-                        {code}
-                    </pre>
-                ) : (
+            <section className="rounded-md border border-gray-800 bg-gray-900 p-4 space-y-4">
+                {loading && (
+                    <p className="text-sm text-gray-400">Analyzing your UI…</p>
+                )}
+                {!loading && result && (
+                    <>
+                        <div>
+                            <h3 className="font-semibold mb-1">UI / UX</h3>
+                            <p className="text-sm text-gray-300">{result.ui}</p>
+                        </div>
+
+                        <div>
+                            <h3 className="font-semibold mb-1">Accessibility</h3>
+                            <p className="text-sm text-gray-300">{result.accessibility}</p>
+                        </div>
+
+                        <div>
+                            <h3 className="font-semibold mb-1">Code Quality</h3>
+                            <p className="text-sm text-gray-300">{result.code}</p>
+                        </div>
+                    </>
+                )}
+                {!loading && !result && (
                     <p className="text-sm text-gray-500 italic">
-                        No input yet
+                        No review yet
                     </p>
                 )}
             </section>
