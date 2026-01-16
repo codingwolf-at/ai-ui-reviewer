@@ -40,12 +40,13 @@ export default function Home() {
 
     // TODO: disable button if no change in code after API call
     // TODO: add support for dark/light mode
+    // TODO: Add a short demo GIF or screenshot in README.
 
     return (
         <main className="max-w-4xl mx-auto p-6 space-y-8 min-h-screen">
             <header>
                 <h1 className="text-3xl font-bold">
-                    AI UI Reviewer
+                    ReviewUI — AI Powered UI Reviewer
                 </h1>
                 <p className="text-gray-400 mt-2">
                     Paste your UI code and get instant feedback.
