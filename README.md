@@ -69,4 +69,5 @@ This project focuses on:
 - Copy review button
 - Clear input button
 - Keyboard shortcut (Cmd+Enter to review)
+- Add toast notification
 
