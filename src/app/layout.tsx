@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
     title: "ReviewUI",
-    description: "Get instant UI, accessibility, and code feedback",
+    description: "AI-powered UI review tool for frontend developers",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode; }>) {
