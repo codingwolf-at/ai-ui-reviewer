@@ -1,36 +1,72 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ReviewUI — AI Powered UI Reviewer
 
-## Getting Started
+ReviewUI is a full-stack web app that analyzes frontend UI code and provides structured feedback on:
 
-First, run the development server:
+- UI/UX improvements
+- Accessibility issues
+- Code quality and best practices
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+The goal of this project was to build a realistic AI-powered product with production-grade frontend UX and backend reliability patterns.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Features
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- Paste JSX/HTML and get instant AI-powered reviews
+- Hybrid feedback system (Design + Accessibility + Code Quality)
+- Smooth loading experience with skeleton screens
+- Optimized action button interactions and state handling
+- Server-side validation and sanitization of AI responses
+- Responsive layout built with Tailwind CSS
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## Tech Stack
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Frontend:
+- Next.js (App Router)
+- React
+- TypeScript
+- Tailwind CSS
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Backend:
+- Next.js API Routes
+- Hugging Face Inference API
+- Server-side response normalization
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Engineering Focus
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+This project focuses on:
+
+- Real AI integration instead of mock responses
+- Output validation and error handling
+- UX polish and perceived performance optimization
+- Clean component architecture
+- Production-style async state management
+
+---
+
+## Local Setup
+
+1. Clone repository to your computer
+2. Install dependencies - `npm i`
+3. Create environment file - `.env.local`
+4. Add your Hugging Face Access token to the environment file in the following format - `HUGGINGFACE_API_KEY=your_api_key_here`
+5. Run development server - `npm run dev`
+
+---
+
+## Future Improvements
+
+- Image support
+- Authentication and saved review history
+- Review comparison and diff view
+- Model selector
+- Dark / light theme toggle
+- Export reviews to markdown or PDF
+- Copy review button
+- Clear input button
+- Keyboard shortcut (Cmd+Enter to review)
+
