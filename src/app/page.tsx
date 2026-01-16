@@ -3,6 +3,8 @@ import { useState } from "react";
 import CodeInput from "@/components/CodeInput";
 import { getAIResponse } from "@/lib/api/review";
 import { ReviewResult } from "@/types/review";
+import ReviewCard from "@/components/ReviewCard";
+import SkeletonCard from "@/components/SkeletonCard";
 
 export default function Home() {
     const [code, setCode] = useState("");
@@ -51,33 +53,31 @@ export default function Home() {
             </section>
 
             {/* AI Output */}
-            <section className="rounded-md border border-gray-800 bg-gray-900 p-4 space-y-4">
+            <section className="grid gap-4">
                 {loading && (
-                    <p className="text-sm text-gray-400">Analyzing your UI…</p>
-                )}
-                {!loading && result && (
                     <>
-                        <div>
-                            <h3 className="font-semibold mb-1">UI / UX</h3>
-                            <p className="text-sm text-gray-300">{result.ui}</p>
-                        </div>
-
-                        <div>
-                            <h3 className="font-semibold mb-1">Accessibility</h3>
-                            <p className="text-sm text-gray-300">{result.accessibility}</p>
-                        </div>
-
-                        <div>
-                            <h3 className="font-semibold mb-1">Code Quality</h3>
-                            <p className="text-sm text-gray-300">{result.code}</p>
-                        </div>
+                        <SkeletonCard />
+                        <SkeletonCard />
+                        <SkeletonCard />
                     </>
                 )}
+                        <SkeletonCard />
+
+
+                {!loading && result && (
+                    <>
+                        <ReviewCard title="UI Review" content={result.ui} />
+                        <ReviewCard title="Accessibility Review" content={result.accessibility} />
+                        <ReviewCard title="Code Review" content={result.code} />
+                    </>
+                )}
+
                 {!loading && !result && (
                     <p className="text-sm text-gray-500 italic">
                         No review yet
                     </p>
                 )}
+
                 {error && (
                     <p className="text-sm text-red-400">
                         {error}
