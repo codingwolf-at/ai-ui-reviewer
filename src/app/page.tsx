@@ -13,10 +13,23 @@ export default function Home() {
     const [error, setError] = useState<string | null>(null);
 
     const handleInput = async () => {
+        const startTime = Date.now();
+
         setLoading(true);
         setError(null);
         setResult(null);
+
         const response = await getAIResponse(code);
+
+        const elapsed = Date.now() - startTime;
+        const minDelay = 1500;
+
+        if (elapsed < minDelay) {
+            await new Promise((resolve) =>
+                setTimeout(resolve, minDelay - elapsed)
+            );
+        }
+
         if (response) {
             setResult(response);
         } else {
@@ -44,11 +57,31 @@ export default function Home() {
                 <CodeInput value={code} onChange={setCode} disabled={loading} />
 
                 <button
-                    disabled={!code.trim() || loading}
-                    className={`px-4 py-2 rounded-md bg-blue-600 text-white disabled:opacity-40 ${loading ? 'cursor-not-allowed' : 'cursor-pointer'}`}
                     onClick={handleInput}
-                >
-                    {loading ? 'Reviewing…' : 'Review UI'}
+                    disabled={!code.trim() || loading}
+                    className="
+                        relative inline-flex items-center justify-center gap-2
+                        px-5 h-10 rounded-lg font-medium
+                        bg-blue-600 text-white
+                        hover:bg-blue-500
+                        focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-gray-900
+                        disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-blue-600
+                        transition-colors
+                    ">
+                    {loading ? (
+                        <>
+                            <span className="opacity-90">
+                                Reviewing
+                            </span>
+                            <span className="flex items-center gap-1 ml-1">
+                                <span className="w-2 h-2 bg-white rounded-full animate-bounce [animation-delay:-0.3s]" />
+                                <span className="w-2 h-2 bg-white rounded-full animate-bounce [animation-delay:-0.15s]" />
+                                <span className="w-2 h-2 bg-white rounded-full animate-bounce" />
+                            </span>
+                        </>
+                    ) : (
+                        "Review UI"
+                    )}
                 </button>
             </section>
 
