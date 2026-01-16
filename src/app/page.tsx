@@ -61,8 +61,6 @@ export default function Home() {
                         <SkeletonCard />
                     </>
                 )}
-                        <SkeletonCard />
-
 
                 {!loading && result && (
                     <>
