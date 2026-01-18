@@ -42,6 +42,7 @@ export default function Home() {
     // TODO: disable button if no change in code after API call
     // TODO: add support for dark/light mode
     // TODO: Add a short demo GIF or screenshot in README.
+    // TODO: add msg stating to contact you in case the api fails
 
     return (
         <main className="max-w-4xl mx-auto p-6 space-y-8 min-h-screen">

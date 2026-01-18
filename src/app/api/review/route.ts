@@ -7,77 +7,66 @@ const cleanText = (text: string) => {
         .trim();
 };
 
+// "mistralai/mistral-7b-instruct",
+//  "nousresearch/hermes-2-pro",
+
 export async function POST(req: Request) {
     try {
         const { code } = await req.json();
 
-        const res = await fetch(
-            "https://router.huggingface.co/v1/chat/completions",
-            {
-                method: "POST",
-                headers: {
-                    Authorization: `Bearer ${process.env.HUGGINGFACE_API_KEY}`,
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    model: "google/gemma-2-2b-it",
-                    messages: [
-                        {
-                            role: "system",
-                            content: `
+        const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+            method: "POST",
+            headers: {
+                "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                model: "mistralai/mistral-7b-instruct",
+                messages: [
+                    {
+                        role: "system",
+                        content: `
                             You are a senior frontend engineer performing a critical UI code review.
-                            
-                            Your job is NOT to describe the UI.
-                            Your job IS to find improvement opportunities.
-                            
-                            Strict responsibilities:
-                            
+
+                            Each field has a strict responsibility:
+
                             UI:
-                            - Point out visual or interaction improvements
-                            - Suggest better spacing, hierarchy, feedback states, or layout improvements
-                            - Never summarize what exists
-                            
+                            - Visual design and interaction improvements
+
                             Accessibility:
-                            - Point out missing or improvable accessibility features
-                            - Suggest specific improvements (ARIA, keyboard, contrast, semantics)
-                            - Never praise or summarize existing behavior
-                            
+                            - Accessibility improvements only
+
                             Code:
-                            - Suggest maintainability, scalability, or structure improvements
-                            - Focus on reusability, separation of concerns, naming, and patterns
-                            - Never talk about visual design here
-                            
+                            - Architecture and maintainability suggestions
+
                             Rules:
-                            - Every field must contain at least one improvement suggestion
-                            - Do NOT explain what the code does
-                            - Do NOT repeat points across fields
+                            - Do NOT describe what the code does
+                            - Do NOT repeat the input
+                            - Do not suggest improvements that already exist in the input code
+                            - Avoid recommending semantic tags or attributes that already exist
                             - No markdown
                             - No code blocks
+                            - Never leave fields empty
                             - Be concise and actionable
-                            
+
                             Return ONLY valid JSON:
-                            
+
                             {
-                              "ui": "string",
-                              "accessibility": "string",
-                              "code": "string"
+                                "ui": "string",
+                                "accessibility": "string",
+                                "code": "string"
                             }
-                            `
-                        },
-                        {
-                            role: "user",
-                            content: `
-                      Review this UI code:
-                      
-                      ${code}
-                      `,
-                        },
-                    ],
-                    temperature: 0.2,
-                    max_tokens: 300,
-                }),
-            }
-        );
+                        `
+                    },
+                    {
+                        role: "user",
+                        content: `Review this UI code:\n${code}`
+                    }
+                ],
+                temperature: 0.2,
+                max_tokens: 500
+            }),
+        });
 
         if (!res.ok) {
             const err = await res.text();
