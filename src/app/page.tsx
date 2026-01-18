@@ -1,9 +1,16 @@
 "use client";
 import { useState } from "react";
-import CodeInput from "@/components/CodeInput";
-import { getAIResponse } from "@/lib/api/review";
+// constants
+import { INPUT_TABS } from "@/constants/ui";
+// types
 import { ReviewResult } from "@/types/review";
+// helpers
+import { getAIResponse } from "@/lib/api/review";
+// components
+import Tabs from "@/components/Tabs";
+import CodeInput from "@/components/CodeInput";
 import ReviewCard from "@/components/ReviewCard";
+import ImageInput from "@/components/ImageInput";
 import SkeletonCard from "@/components/SkeletonCard";
 import PrimaryButton from "@/components/PrimaryButton";
 
@@ -12,6 +19,8 @@ export default function Home() {
     const [loading, setLoading] = useState(false);
     const [result, setResult] = useState<ReviewResult | null>(null);
     const [error, setError] = useState<string | null>(null);
+    const [inputMode, setInputMode] = useState(INPUT_TABS[0].id);
+    const [imageFile, setImageFile] = useState<File | null>(null);
 
     const handleInput = async () => {
         const startTime = Date.now();
@@ -55,9 +64,19 @@ export default function Home() {
                 </p>
             </header>
 
+            <Tabs   
+                tabs={INPUT_TABS} 
+                activeTab={inputMode} 
+                onChange={setInputMode}
+            />
+
             {/* AI Input */}
             <section className="space-y-4">
-                <CodeInput value={code} onChange={setCode} disabled={loading} />
+                {inputMode === "code" ? (
+                    <CodeInput value={code} onChange={setCode} disabled={loading} />
+                ) : (
+                    <ImageInput onSelect={setImageFile} disabled={loading} />
+                )}
 
                 <PrimaryButton
                     onClick={handleInput}
