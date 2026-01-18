@@ -23,7 +23,7 @@ const PrimaryButton = ({
             disabled={isDisabled}
             className="
         relative inline-flex items-center justify-center gap-2
-        px-5 h-10 rounded-lg font-medium
+        px-5 h-10 rounded-lg font-medium cursor-pointer
         bg-blue-600 text-white
         hover:bg-blue-500
         focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-gray-900

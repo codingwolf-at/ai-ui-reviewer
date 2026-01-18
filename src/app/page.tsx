@@ -52,6 +52,8 @@ export default function Home() {
     // TODO: add support for dark/light mode
     // TODO: Add a short demo GIF or screenshot in README.
     // TODO: add msg stating to contact you in case the api fails
+    // change button disable condition to check for content basis on input type
+    // update page description ' Paste your UI code and get instant feedback.'
 
     return (
         <main className="max-w-4xl mx-auto p-6 space-y-8 min-h-screen">
@@ -73,9 +75,17 @@ export default function Home() {
             {/* AI Input */}
             <section className="space-y-4">
                 {inputMode === "code" ? (
-                    <CodeInput value={code} onChange={setCode} disabled={loading} />
+                    <CodeInput 
+                        value={code} 
+                        onChange={setCode} 
+                        disabled={loading} 
+                    />
                 ) : (
-                    <ImageInput onSelect={setImageFile} disabled={loading} />
+                    <ImageInput 
+                        selectedFile={imageFile}
+                        onSelect={setImageFile} 
+                        disabled={loading} 
+                    />
                 )}
 
                 <PrimaryButton
