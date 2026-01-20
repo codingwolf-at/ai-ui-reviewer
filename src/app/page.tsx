@@ -5,7 +5,8 @@ import { INPUT_TABS, INPUT_TYPES } from "@/constants/ui";
 // types
 import { ReviewResult } from "@/types/review";
 // helpers
-import { getAIResponse } from "@/lib/api/review";
+import { enforceMinDelay } from "@/lib/ui";
+import { reviewCode, reviewImage } from "@/lib/review";
 // components
 import Tabs from "@/components/Tabs";
 import CodeInput from "@/components/CodeInput";
@@ -22,17 +23,12 @@ export default function Home() {
     const [inputMode, setInputMode] = useState(INPUT_TABS[0].id);
     const [imageFile, setImageFile] = useState<File | null>(null);
 
-    const isReviewBtnDisable = useMemo(() => {
-        let disabled = false;
-        if (
-            inputMode === INPUT_TYPES.CODE && !code?.trim()?.length ||
-            inputMode === INPUT_TYPES.IMG && !imageFile ||
-            loading
-        ) {
-            disabled = true;
-        } 
-        return disabled
-    }, [code, inputMode, imageFile, loading])
+    const isReviewBtnDisabled = useMemo(() => {
+        if (loading) return true;
+        if (inputMode === INPUT_TYPES.CODE) return !code.trim();
+        if (inputMode === INPUT_TYPES.IMG) return !imageFile;
+        return true;
+    }, [code, inputMode, imageFile, loading]);
 
     const handleInput = async () => {
         const startTime = Date.now();
@@ -41,23 +37,19 @@ export default function Home() {
         setError(null);
         setResult(null);
 
-        const response = await getAIResponse(code);
+        try {
+            const response =
+                inputMode === INPUT_TYPES.IMG
+                    ? await reviewImage(imageFile!)
+                    : await reviewCode(code);
 
-        const elapsed = Date.now() - startTime;
-        const minDelay = 1500;
-
-        if (elapsed < minDelay) {
-            await new Promise((resolve) =>
-                setTimeout(resolve, minDelay - elapsed)
-            );
-        }
-
-        if (response) {
+            await enforceMinDelay(startTime);
             setResult(response);
-        } else {
+        } catch {
             setError("Failed to analyze UI. Please try again.");
+        } finally {
+            setLoading(false);
         }
-        setLoading(false);
     };
 
     const handleTabs = (newTab: string) => {
@@ -70,12 +62,14 @@ export default function Home() {
         setInputMode(newTab);
     };
 
-    // TODO: disable button if no change in code/image after API call
+    // TODO: disable button if no change in code/image after API call or add api caching
     // TODO: add support for dark/light mode
     // TODO: Add a short demo GIF or screenshot in README.
     // TODO: add msg stating to contact you in case the api fails
-    // handle for cases if user paste's a snippet which is either not code, or not ui related
-    // handle for case where user uploads a picture which is not UI related and incorrect
+    // TODO: handle for cases if user paste's a snippet which is either not code, or not ui related
+    // TODO: handle for case where user uploads a picture which is not UI related and incorrect
+    // TODO: fine tune prompt, current it gives suggestions which are already in the code
+    // TODO: improve UI for change image button (add floating X button)
 
     return (
         <main className="max-w-4xl mx-auto p-6 space-y-8 min-h-screen">
@@ -88,25 +82,25 @@ export default function Home() {
                 </p>
             </header>
 
-            <Tabs   
-                tabs={INPUT_TABS} 
-                activeTab={inputMode} 
+            <Tabs
+                tabs={INPUT_TABS}
+                activeTab={inputMode}
                 onChange={handleTabs}
             />
 
             {/* AI Input */}
             <section className="space-y-4">
                 {inputMode === "code" ? (
-                    <CodeInput 
-                        value={code} 
-                        onChange={setCode} 
-                        disabled={loading} 
+                    <CodeInput
+                        value={code}
+                        onChange={setCode}
+                        disabled={loading}
                     />
                 ) : (
-                    <ImageInput 
+                    <ImageInput
                         selectedFile={imageFile}
-                        onSelect={setImageFile} 
-                        disabled={loading} 
+                        onSelect={setImageFile}
+                        disabled={loading}
                     />
                 )}
 
@@ -114,7 +108,7 @@ export default function Home() {
                     onClick={handleInput}
                     loading={loading}
                     loadingText="Reviewing"
-                    disabled={isReviewBtnDisable}
+                    disabled={isReviewBtnDisabled}
                 >
                     Review UI
                 </PrimaryButton>
@@ -132,9 +126,20 @@ export default function Home() {
 
                 {!loading && result && (
                     <>
-                        <ReviewCard title="UI Review" content={result.ui} />
-                        <ReviewCard title="Accessibility Review" content={result.accessibility} />
-                        <ReviewCard title="Code Review" content={result.code} />
+                        <ReviewCard 
+                            title="UI Review" 
+                            content={result.ui} 
+                        />
+                        <ReviewCard 
+                            title="Accessibility Review" 
+                            content={result.accessibility} 
+                        />
+                        <ReviewCard
+                            title={inputMode === INPUT_TYPES.IMG
+                                ? "Implementation Suggestions"
+                                : "Code Quality"}
+                            content={result.code}
+                        />
                     </>
                 )}
 

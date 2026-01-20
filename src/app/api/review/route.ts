@@ -12,7 +12,119 @@ const cleanText = (text: string) => {
 
 export async function POST(req: Request) {
     try {
-        const { code } = await req.json();
+        const body = await req.json();
+        const { type, code, image } = body;
+
+        if (type === "code" && !code) {
+            return NextResponse.json(
+                { error: "Missing code input" },
+                { status: 400 }
+            );
+        }
+
+        if (type === "image" && !image) {
+            return NextResponse.json(
+                { error: "Missing image input" },
+                { status: 400 }
+            );
+        }
+
+        let messages;
+        let model;
+
+        if (type === "image") {
+            model = "openai/gpt-4o-mini";
+            messages = [
+                {
+                    role: "system",
+                    content: `
+                        You are a senior UI/UX reviewer analyzing a screenshot of a user interface.
+                        
+                        Provide feedback in three categories:
+                        
+                        UI:
+                        - Visual design and layout improvements
+                        
+                        Accessibility:
+                        - Accessibility and usability issues visible in the UI
+                        
+                        Code:
+                        - Implementation suggestions inferred from the UI
+                        
+                        Rules:
+                        - Do not describe the image
+                        - Do not repeat obvious elements
+                        - Be concise and actionable
+                        - No markdown
+                        - No code blocks
+                        - Never leave fields empty
+                        
+                        Return ONLY valid JSON:
+                        
+                        {
+                            "ui": "string",
+                            "accessibility": "string",
+                            "code": "string"
+                        }
+                    `
+                },
+                {
+                    role: "user",
+                    content: [
+                        { type: "text", text: "Review this UI screenshot" },
+                        {
+                            type: "image_url",
+                            image_url: {
+                                url: image
+                            }
+                        }
+                    ]
+                }
+            ];
+        } else {
+            model = "mistralai/mistral-7b-instruct";
+            messages = [
+                {
+                    role: "system",
+                    content: `
+                        You are a senior frontend engineer performing a critical UI code review.
+                        
+                        Each field has a strict responsibility:
+                        
+                        UI:
+                        - Visual design and interaction improvements
+                        
+                        Accessibility:
+                        - Accessibility improvements only
+                        
+                        Code:
+                        - Architecture and maintainability suggestions
+                        
+                        Rules:
+                        - Do NOT describe what the code does
+                        - Do NOT repeat the input
+                        - Do not suggest improvements that already exist in the input code
+                        - Avoid recommending semantic tags or attributes that already exist
+                        - No markdown
+                        - No code blocks
+                        - Never leave fields empty
+                        - Be concise and actionable
+                        
+                        Return ONLY valid JSON:
+                        
+                        {
+                            "ui": "string",
+                            "accessibility": "string",
+                            "code": "string"
+                        }
+                    `
+                },
+                {
+                    role: "user",
+                    content: `Review this UI code:\n${code}`
+                }
+            ];
+        };
 
         const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
             method: "POST",
@@ -21,48 +133,8 @@ export async function POST(req: Request) {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
-                model: "mistralai/mistral-7b-instruct",
-                messages: [
-                    {
-                        role: "system",
-                        content: `
-                            You are a senior frontend engineer performing a critical UI code review.
-
-                            Each field has a strict responsibility:
-
-                            UI:
-                            - Visual design and interaction improvements
-
-                            Accessibility:
-                            - Accessibility improvements only
-
-                            Code:
-                            - Architecture and maintainability suggestions
-
-                            Rules:
-                            - Do NOT describe what the code does
-                            - Do NOT repeat the input
-                            - Do not suggest improvements that already exist in the input code
-                            - Avoid recommending semantic tags or attributes that already exist
-                            - No markdown
-                            - No code blocks
-                            - Never leave fields empty
-                            - Be concise and actionable
-
-                            Return ONLY valid JSON:
-
-                            {
-                                "ui": "string",
-                                "accessibility": "string",
-                                "code": "string"
-                            }
-                        `
-                    },
-                    {
-                        role: "user",
-                        content: `Review this UI code:\n${code}`
-                    }
-                ],
+                model: model,
+                messages: messages,
                 temperature: 0.2,
                 max_tokens: 500
             }),
@@ -75,8 +147,8 @@ export async function POST(req: Request) {
         }
 
         const data = await res.json();
-
-        const content = data.choices?.[0]?.message?.content ?? "";
+        let content = data.choices?.[0]?.message?.content ?? "{}";
+        content = content.replace(/```json|```/g, "").trim();
 
         // Extract JSON between first { and last }
         const jsonMatch = content.match(/\{[\s\S]*\}/);
