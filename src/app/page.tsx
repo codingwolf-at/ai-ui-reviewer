@@ -5,10 +5,11 @@ import { INPUT_TABS, INPUT_TYPES } from "@/constants/ui";
 // types
 import { ReviewResult } from "@/types/review";
 // helpers
-import { enforceMinDelay, getCurrentInputKey } from "@/lib/ui";
 import { reviewCode, reviewImage } from "@/lib/review";
+import { enforceMinDelay, getCurrentInputKey } from "@/lib/ui";
 // components
 import Tabs from "@/components/Tabs";
+import Tooltip from "@/components/Tooltip";
 import CodeInput from "@/components/CodeInput";
 import ReviewCard from "@/components/ReviewCard";
 import ImageInput from "@/components/ImageInput";
@@ -24,15 +25,24 @@ export default function Home() {
     const [imageFile, setImageFile] = useState<File | null>(null);
     // for caching 
     const [lastReviewedKey, setLastReviewedKey] = useState<string | null>(null);
+
+    const currentKey = useMemo(() => (
+        getCurrentInputKey(inputMode, code, imageFile)
+    ), [inputMode, code, imageFile]);
     
     const isReviewBtnDisabled = useMemo(() => {
-        const currentKey = getCurrentInputKey(inputMode, code, imageFile);
         if (loading) return true;
         if (currentKey === lastReviewedKey) return true;
         if (inputMode === INPUT_TYPES.CODE) return !code.trim();
         if (inputMode === INPUT_TYPES.IMG) return !imageFile;
         return false;
-    }, [code, inputMode, imageFile, loading, lastReviewedKey]);
+    }, [code, inputMode, imageFile, loading, lastReviewedKey, currentKey]);
+
+    const disabledTooltipText = useMemo(() => {
+        if (currentKey === lastReviewedKey) {
+            return 'No changes detected. Please update your input before reviewing again.'
+        } return ""
+    }, [lastReviewedKey, currentKey])
 
     const handleInput = async () => {
         const startTime = Date.now();
@@ -110,14 +120,16 @@ export default function Home() {
                     />
                 )}
 
-                <PrimaryButton
-                    onClick={handleInput}
-                    loading={loading}
-                    loadingText="Reviewing"
-                    disabled={isReviewBtnDisabled}
-                >
-                    Review UI
-                </PrimaryButton>
+                <Tooltip content={disabledTooltipText}>
+                    <PrimaryButton
+                        onClick={handleInput}
+                        loading={loading}
+                        loadingText="Reviewing"
+                        disabled={isReviewBtnDisabled}
+                    >
+                        Review UI
+                    </PrimaryButton>
+                </Tooltip>
             </section>
 
             {/* AI Output */}
