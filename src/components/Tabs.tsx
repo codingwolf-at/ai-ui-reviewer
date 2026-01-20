@@ -24,11 +24,10 @@ const Tabs = ({ tabs, activeTab, onChange }: TabsProps) => {
                         onClick={() => onChange(id)}
                         disabled={isActive}
                         className={`
-                            px-3 py-1 rounded-md text-sm
-                            transition-colors cursor-pointer
+                            bg-(--surface-bg) rounded-md px-3 py-1.5 cursor-pointer
                             ${isActive
-                                ? "bg-gray-800 text-white cursor-default"
-                                : "text-gray-400 hover:text-white"
+                                ? "text-white shadow-sm"
+                                : "text-gray-400 hover:text-gray-200 hover:bg-white/5"
                             }
                         `}
                     >

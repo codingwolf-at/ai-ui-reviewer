@@ -87,8 +87,13 @@ export default function Home() {
     // TODO: improve UI for change image button (add floating X button)
     // TODO: change img does not clear the result
 
+
+    // IMP TODO: fix button with tooltip and img uploader & getting tooltip with no image attached
+    // fix button hover and disabled style (gpt), tabs does not look like tabs
+    // they could use more distinction between active and in active
+
     return (
-        <main className="max-w-4xl mx-auto p-6 space-y-8 min-h-screen">
+        <main className="max-w-4xl mx-auto p-6 space-y-8">
             <header>
                 <h1 className="text-3xl font-bold">
                     ReviewUI — AI Powered UI Reviewer
@@ -107,7 +112,7 @@ export default function Home() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
                 {/* AI Input */}
-                <section className="rounded-lg border border-gray-800 bg-gray-900 p-4 space-y-4">
+                <section className="bg-(--panel-bg) rounded-xl p-5 flex flex-col gap-4">
                     {inputMode === "code" ? (
                         <CodeInput
                             value={code}
@@ -135,7 +140,7 @@ export default function Home() {
                 </section>
 
                 {/* AI Output */}
-                <section className="grid gap-4 rounded-lg border border-gray-800 bg-gray-900 p-4 space-y-4">
+                <section className="bg-(--panel-bg) rounded-xl p-5 flex flex-col gap-4">
                     {loading && (
                         <>
                             <SkeletonCard />

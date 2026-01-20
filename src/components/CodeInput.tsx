@@ -12,7 +12,7 @@ const CodeInput = ({ value, onChange, disabled }: CodeInputProps) => {
             value={value}
             onChange={(e) => onChange(e.target.value)}
             placeholder="Paste JSX, HTML, or CSS here..."
-            className={`w-full min-h-[200px] rounded-md bg-gray-900 border border-gray-800 p-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${disabled ? "opacity-60 cursor-not-allowed" : ""}`}
+            className={`bg-(--input-bg) text-gray-200 placeholder:text-gray-500 rounded-lg p-4 h-80 resize-none focus:outline-none focus:ring-1 focus:ring-white/10 ${disabled ? "opacity-60 cursor-not-allowed" : ""}`}
             disabled={disabled}
         />
     );
