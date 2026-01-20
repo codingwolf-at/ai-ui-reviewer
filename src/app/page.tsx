@@ -29,7 +29,7 @@ export default function Home() {
     const currentKey = useMemo(() => (
         getCurrentInputKey(inputMode, code, imageFile)
     ), [inputMode, code, imageFile]);
-    
+
     const isReviewBtnDisabled = useMemo(() => {
         if (loading) return true;
         if (currentKey === lastReviewedKey) return true;
@@ -104,75 +104,78 @@ export default function Home() {
                 onChange={handleTabs}
             />
 
-            {/* AI Input */}
-            <section className="space-y-4">
-                {inputMode === "code" ? (
-                    <CodeInput
-                        value={code}
-                        onChange={setCode}
-                        disabled={loading}
-                    />
-                ) : (
-                    <ImageInput
-                        selectedFile={imageFile}
-                        onSelect={setImageFile}
-                        disabled={loading}
-                    />
-                )}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
-                <Tooltip content={disabledTooltipText}>
-                    <PrimaryButton
-                        onClick={handleInput}
-                        loading={loading}
-                        loadingText="Reviewing"
-                        disabled={isReviewBtnDisabled}
-                    >
-                        Review UI
-                    </PrimaryButton>
-                </Tooltip>
-            </section>
-
-            {/* AI Output */}
-            <section className="grid gap-4">
-                {loading && (
-                    <>
-                        <SkeletonCard />
-                        <SkeletonCard />
-                        <SkeletonCard />
-                    </>
-                )}
-
-                {!loading && result && (
-                    <>
-                        <ReviewCard
-                            title="UI Review"
-                            content={result.ui}
+                {/* AI Input */}
+                <section className="rounded-lg border border-gray-800 bg-gray-900 p-4 space-y-4">
+                    {inputMode === "code" ? (
+                        <CodeInput
+                            value={code}
+                            onChange={setCode}
+                            disabled={loading}
                         />
-                        <ReviewCard
-                            title="Accessibility Review"
-                            content={result.accessibility}
+                    ) : (
+                        <ImageInput
+                            selectedFile={imageFile}
+                            onSelect={setImageFile}
+                            disabled={loading}
                         />
-                        <ReviewCard
-                            title={inputMode === INPUT_TYPES.IMG
-                                ? "Implementation Suggestions"
-                                : "Code Quality"}
-                            content={result.code}
-                        />
-                    </>
-                )}
+                    )}
 
-                {!loading && !result && (
-                    <p className="text-sm text-gray-500 italic">
-                        No review yet
-                    </p>
-                )}
+                    <Tooltip content={disabledTooltipText}>
+                        <PrimaryButton
+                            onClick={handleInput}
+                            loading={loading}
+                            loadingText="Reviewing"
+                            disabled={isReviewBtnDisabled}
+                        >
+                            Review UI
+                        </PrimaryButton>
+                    </Tooltip>
+                </section>
 
-                {error && (
-                    <p className="text-sm text-red-400">
-                        {error}
-                    </p>
-                )}
-            </section>
+                {/* AI Output */}
+                <section className="grid gap-4 rounded-lg border border-gray-800 bg-gray-900 p-4 space-y-4">
+                    {loading && (
+                        <>
+                            <SkeletonCard />
+                            <SkeletonCard />
+                            <SkeletonCard />
+                        </>
+                    )}
+
+                    {!loading && result && (
+                        <>
+                            <ReviewCard
+                                title="UI Review"
+                                content={result.ui}
+                            />
+                            <ReviewCard
+                                title="Accessibility Review"
+                                content={result.accessibility}
+                            />
+                            <ReviewCard
+                                title={inputMode === INPUT_TYPES.IMG
+                                    ? "Implementation Suggestions"
+                                    : "Code Quality"}
+                                content={result.code}
+                            />
+                        </>
+                    )}
+
+                    {!loading && !result && (
+                        <p className="text-sm text-gray-500 italic">
+                            No review yet
+                        </p>
+                    )}
+
+                    {error && (
+                        <p className="text-sm text-red-400">
+                            {error}
+                        </p>
+                    )}
+                </section>
+            </div>
         </main>
     );
 }
