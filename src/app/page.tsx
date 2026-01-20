@@ -1,7 +1,7 @@
 "use client";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 // constants
-import { INPUT_TABS } from "@/constants/ui";
+import { INPUT_TABS, INPUT_TYPES } from "@/constants/ui";
 // types
 import { ReviewResult } from "@/types/review";
 // helpers
@@ -21,6 +21,18 @@ export default function Home() {
     const [error, setError] = useState<string | null>(null);
     const [inputMode, setInputMode] = useState(INPUT_TABS[0].id);
     const [imageFile, setImageFile] = useState<File | null>(null);
+
+    const isReviewBtnDisable = useMemo(() => {
+        let disabled = false;
+        if (
+            inputMode === INPUT_TYPES.CODE && !code?.trim()?.length ||
+            inputMode === INPUT_TYPES.IMG && !imageFile ||
+            loading
+        ) {
+            disabled = true;
+        } 
+        return disabled
+    }, [code, inputMode, imageFile, loading])
 
     const handleInput = async () => {
         const startTime = Date.now();
@@ -48,12 +60,20 @@ export default function Home() {
         setLoading(false);
     };
 
-    // TODO: disable button if no change in code after API call
+    const handleTabs = (newTab: string) => {
+        setResult(null);
+        if (newTab === INPUT_TYPES.CODE) {
+            setImageFile(null)
+        } else {
+            setCode("");
+        }
+        setInputMode(newTab);
+    };
+
+    // TODO: disable button if no change in code/image after API call
     // TODO: add support for dark/light mode
     // TODO: Add a short demo GIF or screenshot in README.
     // TODO: add msg stating to contact you in case the api fails
-    // change button disable condition to check for content basis on input type
-    // update page description ' Paste your UI code and get instant feedback.'
     // handle for cases if user paste's a snippet which is either not code, or not ui related
     // handle for case where user uploads a picture which is not UI related and incorrect
 
@@ -64,14 +84,14 @@ export default function Home() {
                     ReviewUI — AI Powered UI Reviewer
                 </h1>
                 <p className="text-gray-400 mt-2">
-                    Paste your UI code and get instant feedback.
+                    Paste your UI code or upload a screenshot to get instant, actionable feedback on your interface.
                 </p>
             </header>
 
             <Tabs   
                 tabs={INPUT_TABS} 
                 activeTab={inputMode} 
-                onChange={setInputMode}
+                onChange={handleTabs}
             />
 
             {/* AI Input */}
@@ -94,7 +114,7 @@ export default function Home() {
                     onClick={handleInput}
                     loading={loading}
                     loadingText="Reviewing"
-                    disabled={!code.trim()}
+                    disabled={isReviewBtnDisable}
                 >
                     Review UI
                 </PrimaryButton>
