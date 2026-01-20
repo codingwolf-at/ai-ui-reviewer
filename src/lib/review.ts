@@ -1,32 +1,38 @@
 import { fileToBase64 } from "./ui";
-import { getAIImageResponse, getAIResponse } from "./api/review";
+import { getAIReview } from "./api/review";
 
 export const reviewCode = async (code: string) => {
-  if (!code.trim()) {
-    throw new Error("Empty code input");
-  }
+    if (!code.trim()) {
+        throw new Error("Empty code input");
+    }
 
-  const response = await getAIResponse(code);
+    const response = await getAIReview({
+        type: "code",
+        code,
+    });
 
-  if (!response) {
-    throw new Error("Invalid API response");
-  }
+    if (!response) {
+        throw new Error("Invalid API response");
+    }
 
-  return response;
+    return response;
 };
 
 export const reviewImage = async (file: File) => {
-  if (!file) {
-    throw new Error("No image file provided");
-  }
+    if (!file) {
+        throw new Error("No image file provided");
+    }
 
-  const base64Image = await fileToBase64(file);
+    const base64Image = await fileToBase64(file);
 
-  const response = await getAIImageResponse(base64Image);
+    const response = await getAIReview({
+        type: "image",
+        image: base64Image,
+    });
 
-  if (!response) {
-    throw new Error("Invalid API response");
-  }
+    if (!response) {
+        throw new Error("Invalid API response");
+    }
 
-  return response;
+    return response;
 };
