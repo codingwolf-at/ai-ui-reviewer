@@ -17,6 +17,8 @@ const PrimaryButton = ({
 }: PrimaryButtonProps) => {
     const isDisabled = disabled || loading;
 
+    // TODO: change loading animation, use spinner instead
+
     return (
         <button
             onClick={onClick}

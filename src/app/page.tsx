@@ -54,6 +54,8 @@ export default function Home() {
     // TODO: add msg stating to contact you in case the api fails
     // change button disable condition to check for content basis on input type
     // update page description ' Paste your UI code and get instant feedback.'
+    // handle for cases if user paste's a snippet which is either not code, or not ui related
+    // handle for case where user uploads a picture which is not UI related and incorrect
 
     return (
         <main className="max-w-4xl mx-auto p-6 space-y-8 min-h-screen">
