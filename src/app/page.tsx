@@ -5,7 +5,7 @@ import { INPUT_TABS, INPUT_TYPES } from "@/constants/ui";
 // types
 import { ReviewResult } from "@/types/review";
 // helpers
-import { enforceMinDelay } from "@/lib/ui";
+import { enforceMinDelay, getCurrentInputKey } from "@/lib/ui";
 import { reviewCode, reviewImage } from "@/lib/review";
 // components
 import Tabs from "@/components/Tabs";
@@ -22,13 +22,17 @@ export default function Home() {
     const [error, setError] = useState<string | null>(null);
     const [inputMode, setInputMode] = useState(INPUT_TABS[0].id);
     const [imageFile, setImageFile] = useState<File | null>(null);
-
+    // for caching 
+    const [lastReviewedKey, setLastReviewedKey] = useState<string | null>(null);
+    
     const isReviewBtnDisabled = useMemo(() => {
+        const currentKey = getCurrentInputKey(inputMode, code, imageFile);
         if (loading) return true;
+        if (currentKey === lastReviewedKey) return true;
         if (inputMode === INPUT_TYPES.CODE) return !code.trim();
         if (inputMode === INPUT_TYPES.IMG) return !imageFile;
-        return true;
-    }, [code, inputMode, imageFile, loading]);
+        return false;
+    }, [code, inputMode, imageFile, loading, lastReviewedKey]);
 
     const handleInput = async () => {
         const startTime = Date.now();
@@ -50,6 +54,7 @@ export default function Home() {
         } finally {
             setLoading(false);
         }
+        setLastReviewedKey(getCurrentInputKey(inputMode, code, imageFile));
     };
 
     const handleTabs = (newTab: string) => {
@@ -70,6 +75,7 @@ export default function Home() {
     // TODO: handle for case where user uploads a picture which is not UI related and incorrect
     // TODO: fine tune prompt, current it gives suggestions which are already in the code
     // TODO: improve UI for change image button (add floating X button)
+    // TODO: change img does not clear the result
 
     return (
         <main className="max-w-4xl mx-auto p-6 space-y-8 min-h-screen">
@@ -126,13 +132,13 @@ export default function Home() {
 
                 {!loading && result && (
                     <>
-                        <ReviewCard 
-                            title="UI Review" 
-                            content={result.ui} 
+                        <ReviewCard
+                            title="UI Review"
+                            content={result.ui}
                         />
-                        <ReviewCard 
-                            title="Accessibility Review" 
-                            content={result.accessibility} 
+                        <ReviewCard
+                            title="Accessibility Review"
+                            content={result.accessibility}
                         />
                         <ReviewCard
                             title={inputMode === INPUT_TYPES.IMG

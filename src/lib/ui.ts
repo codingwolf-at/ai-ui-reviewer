@@ -1,3 +1,6 @@
+
+import { INPUT_TYPES } from "@/constants/ui";
+
 export const enforceMinDelay = async (
     startTime: number,
     minDelay = 1500
@@ -31,4 +34,14 @@ export const fileToBase64 = (file: File): Promise<string> => {
 
         reader.readAsDataURL(file);
     });
+};
+
+export const getCurrentInputKey = (inputMode: string, code: string, imageFile: File | null) => {
+    if (inputMode === INPUT_TYPES.CODE) {
+        return `code:${code}`;
+    }
+    if (inputMode === INPUT_TYPES.IMG && imageFile) {
+        return `image:${imageFile.name}-${imageFile.size}`;
+    }
+    return null;
 };
