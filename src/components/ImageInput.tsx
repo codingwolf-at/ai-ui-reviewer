@@ -46,7 +46,7 @@ const ImageInput = ({ selectedFile, onSelect, disabled }: ImageInputProps) => {
         );
     } else {
         return (
-            <div className="flex flex-col items-center justify-center border border-gray-700 rounded-lg p-8 space-y-4 hover:border-gray-500 transition-colors">
+            <div className="flex h-80 flex-col items-center justify-center border border-gray-700 rounded-lg p-8 space-y-4 hover:border-gray-500 transition-colors">
                 {previewUrl ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img

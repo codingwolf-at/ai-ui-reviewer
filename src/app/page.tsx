@@ -97,14 +97,9 @@ export default function Home() {
     // TODO: handle for cases if user paste's a snippet which is either not code, or not ui related
     // TODO: handle for case where user uploads a picture which is not UI related and incorrect
     // TODO: fine tune prompt, current it gives suggestions which are already in the code
-    // TODO: improve UI for change image button (add floating X button)
-    // TODO: change img does not clear the result
-    // TODO: fix image preview size, layout shift should not happen while changing image or input method
-    // TODO: test image error scenario (inside component)
-    // TODO: make the entire layout a little bugger (center column and cards)
 
     return (
-        <main className="max-w-4xl mx-auto px-6 py-8 space-y-8">
+        <main className="max-w-5xl mx-auto px-6 py-8 space-y-8">
             <header>
                 <h1 className="text-3xl font-bold">
                     ReviewUI — AI Powered UI Reviewer
