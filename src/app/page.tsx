@@ -87,6 +87,7 @@ export default function Home() {
     // TODO: change img does not clear the result
     // TODO: fix min height for both the input methods
     // TODO: fix button with tooltip and img uploader & getting tooltip with no image attached
+    // TODO: test error scenarios
 
     return (
         <main className="max-w-4xl mx-auto px-6 py-8 space-y-8">

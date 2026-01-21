@@ -1,6 +1,6 @@
 # ReviewUI — AI Powered UI Reviewer
 
-A product-style web app that analyzes UI code and screenshots using AI to provide instant feedback on UX, accessibility, and code quality.
+A frontend-focused product-style web app that uses AI to analyze UI code and screenshots and provide instant feedback on UX, accessibility, and code quality.
 
 Built with Next.js • Tailwind CSS • OpenRouter AI • TypeScript
 
