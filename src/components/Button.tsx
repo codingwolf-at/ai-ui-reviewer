@@ -14,7 +14,7 @@ type PrimaryButtonProps = {
     isFullWidth?: boolean
 };
 
-const PrimaryButton = ({
+const Button = ({
     loading = false,
     disabled = false,
     loadingText = "Loading",
@@ -52,4 +52,4 @@ const PrimaryButton = ({
     );
 };
 
-export default PrimaryButton;
+export default Button;
