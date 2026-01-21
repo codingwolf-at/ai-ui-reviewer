@@ -77,7 +77,6 @@ export default function Home() {
         setInputMode(newTab);
     };
 
-    // TODO: disable button if no change in code/image after API call or add api caching
     // TODO: add support for dark/light mode
     // TODO: Add a short demo GIF or screenshot in README.
     // TODO: add msg stating to contact you in case the api fails
@@ -86,14 +85,11 @@ export default function Home() {
     // TODO: fine tune prompt, current it gives suggestions which are already in the code
     // TODO: improve UI for change image button (add floating X button)
     // TODO: change img does not clear the result
-
-
-    // IMP TODO: fix button with tooltip and img uploader & getting tooltip with no image attached
-    // fix button hover and disabled style (gpt), tabs does not look like tabs
-    // they could use more distinction between active and in active
+    // TODO: fix min height for both the input methods
+    // TODO: fix button with tooltip and img uploader & getting tooltip with no image attached
 
     return (
-        <main className="max-w-4xl mx-auto p-6 space-y-8">
+        <main className="max-w-4xl mx-auto px-6 py-8 space-y-8">
             <header>
                 <h1 className="text-3xl font-bold">
                     ReviewUI — AI Powered UI Reviewer
@@ -109,7 +105,7 @@ export default function Home() {
                 onChange={handleTabs}
             />
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 relative">
 
                 {/* AI Input */}
                 <section className="bg-(--panel-bg) rounded-xl p-5 flex flex-col gap-4">
@@ -139,8 +135,10 @@ export default function Home() {
                     </Tooltip>
                 </section>
 
+                <div className="hidden lg:block absolute left-1/2 top-0 h-full w-px bg-white/5" />
+
                 {/* AI Output */}
-                <section className="bg-(--panel-bg) rounded-xl p-5 flex flex-col gap-4">
+                <section className="bg-(--panel-bg) rounded-xl p-5 flex flex-col gap-4 lg:sticky lg:top-6 self-start min-h-full">
                     {loading && (
                         <>
                             <SkeletonCard />
@@ -169,9 +167,14 @@ export default function Home() {
                     )}
 
                     {!loading && !result && (
-                        <p className="text-sm text-gray-500 italic">
-                            No review yet
-                        </p>
+                        <>
+                            <p className="text-white font-medium">
+                                Paste your UI code or upload a screenshot to get feedback.
+                            </p>
+                            <p className="text-gray-400 text-sm max-w-xs">
+                                You’ll receive UI, accessibility and code quality insights instantly.
+                            </p>
+                        </>
                     )}
 
                     {error && (
