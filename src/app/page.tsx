@@ -4,6 +4,8 @@ import { useEffect, useMemo, useState } from "react";
 import { INPUT_TABS, INPUT_TYPES } from "@/constants/ui";
 // types
 import { ReviewResult } from "@/types/review";
+// hooks
+import useDeviceInfo from "@/hooks/useDeviceInfo";
 // helpers
 import { reviewCode, reviewImage } from "@/lib/review";
 import { enforceMinDelay, getCurrentInputKey } from "@/lib/ui";
@@ -25,6 +27,8 @@ export default function Home() {
     const [imageFile, setImageFile] = useState<File | null>(null);
     // for caching 
     const [lastReviewedKey, setLastReviewedKey] = useState<string | null>(null);
+
+    const deviceInfo = useDeviceInfo();
     
     const currentKey = useMemo(() => (
         getCurrentInputKey(inputMode, code, imageFile)
@@ -46,7 +50,7 @@ export default function Home() {
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const handleShortcutSubmit = () => {
-        if (isReviewBtnDisabled) return;
+        if (isReviewBtnDisabled && deviceInfo.isMobile) return;
         handleInput();
     };
 
@@ -70,6 +74,10 @@ export default function Home() {
             return 'No changes detected. Please update your input before reviewing again.'
         } return ""
     }, [lastReviewedKey, currentKey])
+
+    const dynamicHelpText = useMemo(() => {    
+        return `Press ${deviceInfo.isWindows ? 'Ctrl + Enter' : '⌘ + Enter'} to review `
+    }, [deviceInfo])
 
     const handleInput = async () => {
         const startTime = Date.now();
@@ -117,6 +125,7 @@ export default function Home() {
     // TODO: handle for cases if user paste's a snippet which is either not code, or not ui related
     // TODO: handle for case where user uploads a picture which is not UI related and incorrect
     // TODO: fine tune prompt, current it gives suggestions which are already in the code
+    // TODO: resolve one console error
 
     return (
         <main className="max-w-5xl mx-auto px-6 py-8 space-y-8">
@@ -176,9 +185,11 @@ export default function Home() {
                             Clear Input
                         </Button>
                     </div>
-                    <p className="text-xs text-gray-400 mt-1 text-center select-none">
-                        Press ⌘ + Enter (or Ctrl + Enter) to review 
-                    </p>
+                    {!deviceInfo.isMobile && (
+                        <p className="text-xs text-gray-400 mt-1 text-center select-none">
+                            {dynamicHelpText}
+                        </p>
+                    )}
                 </section>
 
                 <div className="hidden lg:block absolute left-1/2 top-0 h-full w-px bg-white/5" />
