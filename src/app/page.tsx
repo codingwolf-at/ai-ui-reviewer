@@ -20,7 +20,7 @@ export default function Home() {
     const [code, setCode] = useState("");
     const [loading, setLoading] = useState(false);
     const [result, setResult] = useState<ReviewResult | null>(null);
-    const [error, setError] = useState<string | null>(null);
+    const [error, setError] = useState<boolean>(false);
     const [inputMode, setInputMode] = useState(INPUT_TABS[0].id);
     const [imageFile, setImageFile] = useState<File | null>(null);
     // for caching 
@@ -48,7 +48,7 @@ export default function Home() {
         const startTime = Date.now();
 
         setLoading(true);
-        setError(null);
+        setError(false);
         setResult(null);
 
         try {
@@ -60,7 +60,7 @@ export default function Home() {
             await enforceMinDelay(startTime);
             setResult(response);
         } catch {
-            setError("Failed to analyze UI. Please try again.");
+            setError(true);
         } finally {
             setLoading(false);
         }
@@ -79,15 +79,13 @@ export default function Home() {
 
     // TODO: add support for dark/light mode
     // TODO: Add a short demo GIF or screenshot in README.
-    // TODO: add msg stating to contact you in case the api fails
     // TODO: handle for cases if user paste's a snippet which is either not code, or not ui related
     // TODO: handle for case where user uploads a picture which is not UI related and incorrect
     // TODO: fine tune prompt, current it gives suggestions which are already in the code
     // TODO: improve UI for change image button (add floating X button)
     // TODO: change img does not clear the result
-    // TODO: fix min height for both the input methods
     // TODO: fix button with tooltip and img uploader & getting tooltip with no image attached
-    // TODO: test error scenarios
+    // TODO: test image error scenario (inside component)
 
     return (
         <main className="max-w-4xl mx-auto px-6 py-8 space-y-8">
@@ -167,7 +165,7 @@ export default function Home() {
                         </>
                     )}
 
-                    {!loading && !result && (
+                    {!loading && !result && !error && (
                         <>
                             <p className="text-white font-medium">
                                 Paste your UI code or upload a screenshot to get feedback.
@@ -179,9 +177,15 @@ export default function Home() {
                     )}
 
                     {error && (
-                        <p className="text-sm text-red-400">
-                            {error}
-                        </p>
+                        <>
+                            <p className="font-medium text-red-400">
+                                Couldn’t analyze the UI. Please try again.
+                            </p>
+                            <p className="text-red-400 text-sm max-w-xs">
+                                This usually happens if OpenRouter is temporarily unavailable or the credit balance has been exhausted. 
+                                If it’s a credit issue, please contact me via email, LinkedIn, or X to have the balance restored.
+                            </p>
+                        </>
                     )}
                 </section>
             </div>

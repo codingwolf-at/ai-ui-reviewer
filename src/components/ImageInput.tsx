@@ -28,7 +28,7 @@ const ImageInput = ({ selectedFile, onSelect, disabled }: ImageInputProps) => {
     if (!selectedFile && !previewUrl) {
         return (
             <label
-                className="flex flex-col items-center justify-center border border-dashed border-gray-700 rounded-lg p-8 cursor-pointer hover:border-gray-500 transition-colors"
+                className="flex h-80 flex-col items-center justify-center border border-dashed border-gray-700 rounded-lg p-8 cursor-pointer hover:border-gray-500 transition-colors"
                 aria-label="Upload UI screenshot"
             >
                 <input
