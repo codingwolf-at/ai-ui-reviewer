@@ -40,8 +40,8 @@ export const getCurrentInputKey = (inputMode: string, code: string, imageFile: F
     if (inputMode === INPUT_TYPES.CODE) {
         return `code:${code}`;
     }
-    if (inputMode === INPUT_TYPES.IMG && imageFile) {
-        return `image:${imageFile.name}-${imageFile.size}`;
+    if (inputMode === INPUT_TYPES.IMG) {
+        return `image:${imageFile?.name}-${imageFile?.size}`;
     }
     return null;
 };

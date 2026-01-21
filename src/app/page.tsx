@@ -11,10 +11,10 @@ import { enforceMinDelay, getCurrentInputKey } from "@/lib/ui";
 import Tabs from "@/components/Tabs";
 import Tooltip from "@/components/Tooltip";
 import CodeInput from "@/components/CodeInput";
+import PrimaryButton from "@/components/Button";
 import ReviewCard from "@/components/ReviewCard";
 import ImageInput from "@/components/ImageInput";
 import SkeletonCard from "@/components/SkeletonCard";
-import PrimaryButton from "@/components/PrimaryButton";
 
 export default function Home() {
     const [code, setCode] = useState("");
@@ -37,6 +37,12 @@ export default function Home() {
         if (inputMode === INPUT_TYPES.IMG) return !imageFile;
         return false;
     }, [code, inputMode, imageFile, loading, lastReviewedKey, currentKey]);
+
+    const isClearBtnDisabled = useMemo(() => {
+        if (loading) return true;
+        if (inputMode === INPUT_TYPES.CODE) return !code.trim();
+        if (inputMode === INPUT_TYPES.IMG) return !imageFile;
+    }, [loading, code, inputMode, imageFile])
 
     const disabledTooltipText = useMemo(() => {
         if (currentKey === lastReviewedKey) {
@@ -67,6 +73,15 @@ export default function Home() {
         setLastReviewedKey(getCurrentInputKey(inputMode, code, imageFile));
     };
 
+    const clearInput = () => {
+        if (inputMode === INPUT_TYPES.CODE) {
+            setCode("");
+        } else {
+            setImageFile(null);
+        }
+        setResult(null);
+    };
+
     const handleTabs = (newTab: string) => {
         setResult(null);
         if (newTab === INPUT_TYPES.CODE) {
@@ -84,8 +99,9 @@ export default function Home() {
     // TODO: fine tune prompt, current it gives suggestions which are already in the code
     // TODO: improve UI for change image button (add floating X button)
     // TODO: change img does not clear the result
-    // TODO: fix button with tooltip and img uploader & getting tooltip with no image attached
+    // TODO: fix image preview size, layout shift should not happen while changing image or input method
     // TODO: test image error scenario (inside component)
+    // TODO: make the entire layout a little bugger (center column and cards)
 
     return (
         <main className="max-w-4xl mx-auto px-6 py-8 space-y-8">
@@ -122,16 +138,27 @@ export default function Home() {
                         />
                     )}
 
-                    <Tooltip content={disabledTooltipText}>
+                    <div className="grid grid-cols-2 gap-4">
+                        <Tooltip content={disabledTooltipText}>
+                            <PrimaryButton
+                                onClick={handleInput}
+                                loading={loading}
+                                loadingText="Reviewing"
+                                disabled={isReviewBtnDisabled}
+                                isFullWidth
+                            >
+                                Review UI
+                            </PrimaryButton>
+                        </Tooltip>
                         <PrimaryButton
-                            onClick={handleInput}
-                            loading={loading}
-                            loadingText="Reviewing"
-                            disabled={isReviewBtnDisabled}
+                            onClick={clearInput}
+                            disabled={isClearBtnDisabled}
+                            variant="secondary"
+                            isFullWidth
                         >
-                            Review UI
+                            Clear Input
                         </PrimaryButton>
-                    </Tooltip>
+                    </div>
                 </section>
 
                 <div className="hidden lg:block absolute left-1/2 top-0 h-full w-px bg-white/5" />
@@ -182,7 +209,7 @@ export default function Home() {
                                 Couldn’t analyze the UI. Please try again.
                             </p>
                             <p className="text-red-400 text-sm max-w-xs">
-                                This usually happens if OpenRouter is temporarily unavailable or the credit balance has been exhausted. 
+                                This usually happens if OpenRouter is temporarily unavailable or the credit balance has been exhausted.
                                 If it’s a credit issue, please contact me via email, LinkedIn, or X to have the balance restored.
                             </p>
                         </>

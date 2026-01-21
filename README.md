@@ -72,6 +72,5 @@ Other:
 - Dark / light theme toggle
 - Export reviews to markdown or PDF
 - Copy review button
-- Clear input button
 - Keyboard shortcut (Cmd+Enter to review)
 - Add toast notification

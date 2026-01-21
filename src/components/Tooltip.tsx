@@ -12,7 +12,7 @@ const Tooltip = ({ content, children }: TooltipProps) => {
     const tooltipId = `tooltip-${content.replace(/\s+/g, "-")}`;
     return (
         <div className="relative inline-flex group" aria-describedby={tooltipId}>
-            <span className="inline-flex">
+            <span className="inline-flex flex-1">
                 {children}
             </span>
             <div

@@ -1,8 +1,6 @@
 "use client";
 
 import { useEffect, useMemo } from "react";
-// components
-import PrimaryButton from "./PrimaryButton";
 
 type ImageInputProps = {
     selectedFile: File | null;
@@ -62,10 +60,6 @@ const ImageInput = ({ selectedFile, onSelect, disabled }: ImageInputProps) => {
                         There is some problem with the uploaded image file
                     </p>
                 )}
-                {/* TODO: make it secondary */}
-                <PrimaryButton onClick={() => onSelect(null)} disabled={disabled}>
-                    Change Image
-                </PrimaryButton>
             </div>
         );
     }
