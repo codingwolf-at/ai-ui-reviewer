@@ -1,23 +1,24 @@
 # ReviewUI — AI Powered UI Reviewer
 
-ReviewUI is a full-stack web app that analyzes frontend UI code and provides structured feedback on:
+A product-style web app that analyzes UI code and screenshots using AI to provide instant feedback on UX, accessibility, and code quality.
 
-- UI/UX improvements
-- Accessibility issues
-- Code quality and best practices
-
-The goal of this project was to build a realistic AI-powered product with production-grade frontend UX and backend reliability patterns.
+Built with Next.js • Tailwind CSS • OpenRouter AI • TypeScript
 
 ---
 
-## Features
+## Live Demo
 
-- Paste JSX/HTML and get instant AI-powered reviews
-- Hybrid feedback system (Design + Accessibility + Code Quality)
-- Smooth loading experience with skeleton screens
-- Optimized action button interactions and state handling
-- Server-side validation and sanitization of AI responses
-- Responsive layout built with Tailwind CSS
+👉 https://ai-ui-reviewer.vercel.app
+
+---
+
+## What It Does
+
+- Analyze frontend UI code and screenshots using AI
+- Provides feedback across UI/UX, accessibility, and code quality
+- Supports both code input and image-based UI review
+- Prevents duplicate requests with smart input change detection
+- Smooth loading states and product-style UI experience
 
 ---
 
@@ -31,38 +32,42 @@ Frontend:
 
 Backend:
 - Next.js API Routes
-- Hugging Face Inference API
-- Server-side response normalization
+- OpenRouter AI API
+    - `mistralai/mistral-7b-instruct` for text inputs 
+    - `openai/gpt-4o-mini` for image inputs 
+
+Other:
+- Vercel Deployment
+- Environment variable configuration
 
 ---
 
-## Engineering Focus
+## Key Features
 
-This project focuses on:
+- Split-pane responsive layout (desktop & mobile)
+- Loading skeletons and spinners
+- Disabled state handling and tooltips
+- Input caching to prevent duplicate reviews
+- Image-to-base64 conversion for AI processing
+- Error handling and fallback UI states
 
-- Real AI integration instead of mock responses
-- Output validation and error handling
-- UX polish and perceived performance optimization
-- Clean component architecture
-- Production-style async state management
-
+---
+## Screenshots TODO
 ---
 
 ## Local Setup
 
-1. Clone repository to your computer
+1. Clone repository to your computer - `https://github.com/codingwolf-at/ai-ui-reviewer.git`
 2. Install dependencies - `npm i`
 3. Create environment file - `.env.local`
-4. Add your Hugging Face Access token to the environment file in the following format - `HUGGINGFACE_API_KEY=your_api_key_here`
+4. Add your OpenRouter API Key to the environment file in the following format - `OPENROUTER_API_KEY=your_api_key_here`
 5. Run development server - `npm run dev`
 
 ---
 
 ## Future Improvements
 
-- Image support
 - Authentication and saved review history
-- Review comparison and diff view
 - Model selector
 - Dark / light theme toggle
 - Export reviews to markdown or PDF
@@ -70,4 +75,3 @@ This project focuses on:
 - Clear input button
 - Keyboard shortcut (Cmd+Enter to review)
 - Add toast notification
-
