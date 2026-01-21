@@ -3,6 +3,11 @@ export const INPUT_TYPES = {
     IMG: 'image'
 };
 
+export const THEME = {
+    DARK: 'dark',
+    LIGHT: 'light'
+};
+
 export const INPUT_TABS = [
     { id: INPUT_TYPES.CODE, label: "Code" },
     { id: INPUT_TYPES.IMG, label: "Image" }

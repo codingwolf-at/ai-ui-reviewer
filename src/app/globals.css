@@ -8,3 +8,16 @@
   --primary-btn: #ffffff;
   --primary-btn-text: #000000;
 }
+
+[data-theme="light"] {
+  --app-bg: #f7f7f8;
+  --panel-bg: #ffffff;
+  --input-bg: #f3f3f3;
+  --surface-bg: #ededed;
+  --primary-btn: #000000;
+  --primary-btn-text: #ffffff;
+}
+
+[data-theme="light"] .panel {
+  border: 1px solid rgba(0,0,0,0.06);
+}

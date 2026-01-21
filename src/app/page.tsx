@@ -1,7 +1,7 @@
 "use client";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 // constants
-import { INPUT_TABS, INPUT_TYPES } from "@/constants/ui";
+import { INPUT_TABS, INPUT_TYPES, THEME } from "@/constants/ui";
 // types
 import { ReviewResult } from "@/types/review";
 // helpers
@@ -9,22 +9,46 @@ import { reviewCode, reviewImage } from "@/lib/review";
 import { enforceMinDelay, getCurrentInputKey } from "@/lib/ui";
 // components
 import Tabs from "@/components/Tabs";
+import Button from "@/components/Button";
 import Tooltip from "@/components/Tooltip";
 import CodeInput from "@/components/CodeInput";
-import PrimaryButton from "@/components/Button";
 import ReviewCard from "@/components/ReviewCard";
 import ImageInput from "@/components/ImageInput";
 import SkeletonCard from "@/components/SkeletonCard";
 
 export default function Home() {
-    const [code, setCode] = useState("");
+
     const [loading, setLoading] = useState(false);
+    const [theme, setTheme] = useState<string | null>(null);
+    // input
+    const [inputMode, setInputMode] = useState(INPUT_TABS[0].id);
+    const [code, setCode] = useState("");
+    const [imageFile, setImageFile] = useState<File | null>(null);
+    // output
     const [result, setResult] = useState<ReviewResult | null>(null);
     const [error, setError] = useState<boolean>(false);
-    const [inputMode, setInputMode] = useState(INPUT_TABS[0].id);
-    const [imageFile, setImageFile] = useState<File | null>(null);
     // for caching 
     const [lastReviewedKey, setLastReviewedKey] = useState<string | null>(null);
+
+    useEffect(() => {
+        const savedTheme = localStorage.getItem("theme");
+
+        const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches
+            ? THEME.DARK
+            : THEME.LIGHT;
+
+        const activeTheme = savedTheme || systemTheme;
+
+        setTheme(activeTheme);
+        document.documentElement.setAttribute("data-theme", activeTheme);
+    }, []);
+
+    useEffect(() => {
+        if (!theme) return;
+
+        localStorage.setItem("theme", theme);
+        document.documentElement.setAttribute("data-theme", theme);
+    }, [theme]);
 
     const currentKey = useMemo(() => (
         getCurrentInputKey(inputMode, code, imageFile)
@@ -92,21 +116,31 @@ export default function Home() {
         setInputMode(newTab);
     };
 
-    // TODO: add support for dark/light mode
     // TODO: Add a short demo GIF or screenshot in README.
     // TODO: handle for cases if user paste's a snippet which is either not code, or not ui related
     // TODO: handle for case where user uploads a picture which is not UI related and incorrect
     // TODO: fine tune prompt, current it gives suggestions which are already in the code
 
+    const toggleTheme = () => {
+        setTheme((prev) =>
+            prev === THEME.DARK ? THEME.LIGHT : THEME.DARK
+        );
+    };
+
     return (
         <main className="max-w-5xl mx-auto px-6 py-8 space-y-8">
-            <header>
+            <header className="relative">
                 <h1 className="text-3xl font-bold">
                     ReviewUI — AI Powered UI Reviewer
                 </h1>
                 <p className="text-gray-400 mt-2">
                     Paste your UI code or upload a screenshot to get instant, actionable feedback on your interface.
                 </p>
+                {theme && (
+                    <div onClick={toggleTheme} className="text-sm border border-(--primary-btn) text-(--primary-btn) hover:bg-(--primary-btn)/10 transition cursor-pointer absolute right-0 top-0 rounded-full px-2.5 py-2 flex items-center justify-center select-none">
+                        {theme === THEME.DARK ? '☀️ Light' : '🌙 Dark'}
+                    </div>
+                )}
             </header>
 
             <Tabs
@@ -118,7 +152,7 @@ export default function Home() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 relative">
 
                 {/* AI Input */}
-                <section className="bg-(--panel-bg) rounded-xl p-5 flex flex-col gap-4">
+                <section className="panel bg-(--panel-bg) rounded-xl p-5 flex flex-col gap-4">
                     {inputMode === "code" ? (
                         <CodeInput
                             value={code}
@@ -135,7 +169,7 @@ export default function Home() {
 
                     <div className="grid grid-cols-2 gap-4">
                         <Tooltip content={disabledTooltipText}>
-                            <PrimaryButton
+                            <Button
                                 onClick={handleInput}
                                 loading={loading}
                                 loadingText="Reviewing"
@@ -143,23 +177,23 @@ export default function Home() {
                                 isFullWidth
                             >
                                 Review UI
-                            </PrimaryButton>
+                            </Button>
                         </Tooltip>
-                        <PrimaryButton
+                        <Button
                             onClick={clearInput}
                             disabled={isClearBtnDisabled}
                             variant="secondary"
                             isFullWidth
                         >
                             Clear Input
-                        </PrimaryButton>
+                        </Button>
                     </div>
                 </section>
 
                 <div className="hidden lg:block absolute left-1/2 top-0 h-full w-px bg-white/5" />
 
                 {/* AI Output */}
-                <section className="bg-(--panel-bg) rounded-xl p-5 flex flex-col gap-4 lg:sticky lg:top-6 self-start min-h-full">
+                <section className="panel bg-(--panel-bg) rounded-xl p-5 flex flex-col gap-4 lg:sticky lg:top-6 self-start min-h-full">
                     {loading && (
                         <>
                             <SkeletonCard />
