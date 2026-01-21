@@ -15,7 +15,7 @@ const Tabs = ({ tabs, activeTab, onChange }: TabsProps) => {
     if (!tabs.length) return null;
 
     return (
-        <div className="flex gap-2 mb-4">
+        <div className="flex gap-4 border-b border-white/10">
             {tabs.map(({ id, label }) => {
                 const isActive = activeTab === id;
                 return (
@@ -23,15 +23,18 @@ const Tabs = ({ tabs, activeTab, onChange }: TabsProps) => {
                         key={id}
                         onClick={() => onChange(id)}
                         disabled={isActive}
-                        className={`
-                            bg-(--surface-bg) rounded-md px-3 py-1.5 cursor-pointer
+                        className={`relative pb-2 px-2 text-sm font-medium transition-colors cursor-pointer
                             ${isActive
-                                ? "text-white shadow-sm"
-                                : "text-gray-400 hover:text-gray-200 hover:bg-white/5"
+                                ? "text-white"
+                                : "text-gray-400 hover:text-gray-200"
                             }
                         `}
                     >
                         {label}
+                        {activeTab === id && (
+                            <span className="absolute left-0 bottom-0 w-full h-0.5 bg-white rounded-full" />
+                        )}
+
                     </button>
                 );
             })}
