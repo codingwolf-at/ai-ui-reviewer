@@ -1,5 +1,5 @@
 "use client";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 // constants
 import { INPUT_TABS, INPUT_TYPES } from "@/constants/ui";
 // types
@@ -9,9 +9,9 @@ import { reviewCode, reviewImage } from "@/lib/review";
 import { enforceMinDelay, getCurrentInputKey } from "@/lib/ui";
 // components
 import Tabs from "@/components/Tabs";
+import Button from "@/components/Button";
 import Tooltip from "@/components/Tooltip";
 import CodeInput from "@/components/CodeInput";
-import PrimaryButton from "@/components/Button";
 import ReviewCard from "@/components/ReviewCard";
 import ImageInput from "@/components/ImageInput";
 import SkeletonCard from "@/components/SkeletonCard";
@@ -25,11 +25,11 @@ export default function Home() {
     const [imageFile, setImageFile] = useState<File | null>(null);
     // for caching 
     const [lastReviewedKey, setLastReviewedKey] = useState<string | null>(null);
-
+    
     const currentKey = useMemo(() => (
         getCurrentInputKey(inputMode, code, imageFile)
     ), [inputMode, code, imageFile]);
-
+    
     const isReviewBtnDisabled = useMemo(() => {
         if (loading) return true;
         if (currentKey === lastReviewedKey) return true;
@@ -37,12 +37,33 @@ export default function Home() {
         if (inputMode === INPUT_TYPES.IMG) return !imageFile;
         return false;
     }, [code, inputMode, imageFile, loading, lastReviewedKey, currentKey]);
-
+    
     const isClearBtnDisabled = useMemo(() => {
         if (loading) return true;
         if (inputMode === INPUT_TYPES.CODE) return !code.trim();
         if (inputMode === INPUT_TYPES.IMG) return !imageFile;
     }, [loading, code, inputMode, imageFile])
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const handleShortcutSubmit = () => {
+        if (isReviewBtnDisabled) return;
+        handleInput();
+    };
+
+    useEffect(() => {
+        if (inputMode !== INPUT_TYPES.IMG) return;
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
+                console.log('inside if')
+                e.preventDefault();
+                handleShortcutSubmit();
+            }
+        };
+        window.addEventListener("keydown", handleKeyDown);
+        return () => {
+            window.removeEventListener("keydown", handleKeyDown);
+        };
+    }, [inputMode, handleShortcutSubmit, isReviewBtnDisabled]);
 
     const disabledTooltipText = useMemo(() => {
         if (currentKey === lastReviewedKey) {
@@ -92,7 +113,6 @@ export default function Home() {
         setInputMode(newTab);
     };
 
-    // TODO: add support for dark/light mode
     // TODO: Add a short demo GIF or screenshot in README.
     // TODO: handle for cases if user paste's a snippet which is either not code, or not ui related
     // TODO: handle for case where user uploads a picture which is not UI related and incorrect
@@ -113,6 +133,7 @@ export default function Home() {
                 tabs={INPUT_TABS}
                 activeTab={inputMode}
                 onChange={handleTabs}
+                disabled={loading}
             />
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 relative">
@@ -124,6 +145,7 @@ export default function Home() {
                             value={code}
                             onChange={setCode}
                             disabled={loading}
+                            onSubmitShortcut={handleShortcutSubmit}
                         />
                     ) : (
                         <ImageInput
@@ -135,7 +157,7 @@ export default function Home() {
 
                     <div className="grid grid-cols-2 gap-4">
                         <Tooltip content={disabledTooltipText}>
-                            <PrimaryButton
+                            <Button
                                 onClick={handleInput}
                                 loading={loading}
                                 loadingText="Reviewing"
@@ -143,17 +165,20 @@ export default function Home() {
                                 isFullWidth
                             >
                                 Review UI
-                            </PrimaryButton>
+                            </Button>
                         </Tooltip>
-                        <PrimaryButton
+                        <Button
                             onClick={clearInput}
                             disabled={isClearBtnDisabled}
                             variant="secondary"
                             isFullWidth
                         >
                             Clear Input
-                        </PrimaryButton>
+                        </Button>
                     </div>
+                    <p className="text-xs text-gray-400 mt-1 text-center select-none">
+                        Press ⌘ + Enter (or Ctrl + Enter) to review 
+                    </p>
                 </section>
 
                 <div className="hidden lg:block absolute left-1/2 top-0 h-full w-px bg-white/5" />

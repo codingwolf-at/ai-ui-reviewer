@@ -9,9 +9,10 @@ type TabsProps = {
     tabs: TabItem[];
     activeTab: TabItem["id"];
     onChange: (id: TabItem["id"]) => void;
+    disabled: boolean
 };
 
-const Tabs = ({ tabs, activeTab, onChange }: TabsProps) => {
+const Tabs = ({ tabs, activeTab, onChange, disabled }: TabsProps) => {
     if (!tabs.length) return null;
 
     return (
@@ -22,8 +23,8 @@ const Tabs = ({ tabs, activeTab, onChange }: TabsProps) => {
                     <button
                         key={id}
                         onClick={() => onChange(id)}
-                        disabled={isActive}
-                        className={`relative pb-2 px-2 text-sm font-medium transition-colors cursor-pointer
+                        disabled={isActive || disabled}
+                        className={`relative pb-2 px-2 text-sm font-medium transition-colors cursor-pointer disabled:cursor-not-allowed
                             ${isActive
                                 ? "text-white"
                                 : "text-gray-400 hover:text-gray-200"
