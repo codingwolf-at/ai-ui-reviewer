@@ -1,14 +1,14 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
 // constants
-import { INPUT_TABS, INPUT_TYPES } from "@/constants/ui";
+import { ERROR_MSGS, ERROR_TYPES, INPUT_TABS, INPUT_TYPES } from "@/constants/ui";
 // types
 import { ReviewResult } from "@/types/review";
 // hooks
 import useDeviceInfo from "@/hooks/useDeviceInfo";
 // helpers
 import { reviewCode, reviewImage } from "@/lib/review";
-import { enforceMinDelay, getCurrentInputKey } from "@/lib/ui";
+import { enforceMinDelay, getCurrentInputKey, validateCodeInput, validateImageInput } from "@/lib/ui";
 // components
 import Tabs from "@/components/Tabs";
 import Button from "@/components/Button";
@@ -22,26 +22,27 @@ export default function Home() {
     const [code, setCode] = useState("");
     const [loading, setLoading] = useState(false);
     const [result, setResult] = useState<ReviewResult | null>(null);
-    const [error, setError] = useState<boolean>(false);
+    const [error, setError] = useState<string | null>(null);
     const [inputMode, setInputMode] = useState(INPUT_TABS[0].id);
     const [imageFile, setImageFile] = useState<File | null>(null);
     // for caching 
     const [lastReviewedKey, setLastReviewedKey] = useState<string | null>(null);
 
     const deviceInfo = useDeviceInfo();
-    
+
     const currentKey = useMemo(() => (
         getCurrentInputKey(inputMode, code, imageFile)
     ), [inputMode, code, imageFile]);
-    
+
     const isReviewBtnDisabled = useMemo(() => {
         if (loading) return true;
+        if (error) return false;
         if (currentKey === lastReviewedKey) return true;
         if (inputMode === INPUT_TYPES.CODE) return !code.trim();
         if (inputMode === INPUT_TYPES.IMG) return !imageFile;
         return false;
-    }, [code, inputMode, imageFile, loading, lastReviewedKey, currentKey]);
-    
+    }, [code, inputMode, imageFile, loading, lastReviewedKey, currentKey, error]);
+
     const isClearBtnDisabled = useMemo(() => {
         if (loading) return true;
         if (inputMode === INPUT_TYPES.CODE) return !code.trim();
@@ -51,14 +52,13 @@ export default function Home() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const handleShortcutSubmit = () => {
         if (isReviewBtnDisabled && deviceInfo.isMobile) return;
-        handleInput();
+        handleReviewRequest();
     };
 
     useEffect(() => {
         if (inputMode !== INPUT_TYPES.IMG) return;
         const handleKeyDown = (e: KeyboardEvent) => {
             if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
-                console.log('inside if')
                 e.preventDefault();
                 handleShortcutSubmit();
             }
@@ -70,36 +70,62 @@ export default function Home() {
     }, [inputMode, handleShortcutSubmit, isReviewBtnDisabled]);
 
     const disabledTooltipText = useMemo(() => {
-        if (currentKey === lastReviewedKey) {
+        if ((currentKey === lastReviewedKey) && !error) {
             return 'No changes detected. Please update your input before reviewing again.'
         } return ""
-    }, [lastReviewedKey, currentKey])
+    }, [lastReviewedKey, currentKey, error])
 
-    const dynamicHelpText = useMemo(() => {    
+    const dynamicHelpText = useMemo(() => {
         return `Press ${deviceInfo.isWindows ? 'Ctrl + Enter' : '⌘ + Enter'} to review `
     }, [deviceInfo])
 
-    const handleInput = async () => {
-        const startTime = Date.now();
+    const dynamicErrorText = useMemo(() => {
+        if (!error) return;
+        return ERROR_MSGS[error]
+    }, [error])
 
-        setLoading(true);
-        setError(false);
+    const handleReviewRequest = async () => {
+        setError(null);
         setResult(null);
 
+        if (inputMode === INPUT_TYPES.CODE) {
+            const errorType = validateCodeInput(code);
+            if (errorType) {
+                setError(errorType);
+                return;
+            }
+        }
+        if (inputMode === INPUT_TYPES.IMG) {
+            if (!imageFile) {
+                setError(ERROR_TYPES.INVALID_IMG);
+                return;
+            }
+            const errorType = await validateImageInput(imageFile);
+            if (errorType) {
+                setError(errorType);
+                return;
+            }
+        }
+        submitReview();
+    };
+
+    const submitReview = async () => {
+        setLoading(true);
+        const startTime = Date.now();
         try {
             const response =
                 inputMode === INPUT_TYPES.IMG
                     ? await reviewImage(imageFile!)
                     : await reviewCode(code);
 
-            await enforceMinDelay(startTime);
             setResult(response);
         } catch {
-            setError(true);
+            setError(ERROR_TYPES.API);
         } finally {
+            await enforceMinDelay(startTime);
             setLoading(false);
+            setLastReviewedKey(getCurrentInputKey(inputMode, code, imageFile));
         }
-        setLastReviewedKey(getCurrentInputKey(inputMode, code, imageFile));
     };
 
     const clearInput = () => {
@@ -108,6 +134,7 @@ export default function Home() {
         } else {
             setImageFile(null);
         }
+        setError(null);
         setResult(null);
     };
 
@@ -121,11 +148,8 @@ export default function Home() {
         setInputMode(newTab);
     };
 
-    // TODO: Add a short demo GIF or screenshot in README.
-    // TODO: handle for cases if user paste's a snippet which is either not code, or not ui related
-    // TODO: handle for case where user uploads a picture which is not UI related and incorrect
+    // TODO: Add a short demo GIF or screenshot in README {mockups}.
     // TODO: fine tune prompt, current it gives suggestions which are already in the code
-    // TODO: resolve one console error
 
     return (
         <main className="max-w-5xl mx-auto px-6 py-8 space-y-8">
@@ -167,13 +191,13 @@ export default function Home() {
                     <div className="grid grid-cols-2 gap-4">
                         <Tooltip content={disabledTooltipText}>
                             <Button
-                                onClick={handleInput}
+                                onClick={handleReviewRequest}
                                 loading={loading}
                                 loadingText="Reviewing"
                                 disabled={isReviewBtnDisabled}
                                 isFullWidth
                             >
-                                Review UI
+                                Review
                             </Button>
                         </Tooltip>
                         <Button
@@ -182,7 +206,7 @@ export default function Home() {
                             variant="secondary"
                             isFullWidth
                         >
-                            Clear Input
+                            Clear
                         </Button>
                     </div>
                     {!deviceInfo.isMobile && (
@@ -234,14 +258,13 @@ export default function Home() {
                         </>
                     )}
 
-                    {error && (
+                    {error && dynamicErrorText && Object.keys(dynamicErrorText).length && !loading && (
                         <>
                             <p className="font-medium text-red-400">
-                                Couldn’t analyze the UI. Please try again.
+                                {dynamicErrorText.text}
                             </p>
-                            <p className="text-red-400 text-sm max-w-xs">
-                                This usually happens if OpenRouter is temporarily unavailable or the credit balance has been exhausted.
-                                If it’s a credit issue, please contact me via email, LinkedIn, or X to have the balance restored.
+                            <p className="text-red-400 text-sm">
+                                {dynamicErrorText.subText}
                             </p>
                         </>
                     )}

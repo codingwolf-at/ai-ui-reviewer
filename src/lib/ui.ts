@@ -1,5 +1,5 @@
 
-import { INPUT_TYPES } from "@/constants/ui";
+import { ERROR_TYPES, INPUT_TYPES, MIN_CODE_LENGTH } from "@/constants/ui";
 
 export const enforceMinDelay = async (
     startTime: number,
@@ -44,4 +44,64 @@ export const getCurrentInputKey = (inputMode: string, code: string, imageFile: F
         return `image:${imageFile?.name}-${imageFile?.size}`;
     }
     return null;
+};
+
+export const looksLikeUICode = (input: string) => {
+    const text = input.trim();
+
+    const patterns = [
+        // HTML / JSX tags
+        /<\/?[a-zA-Z][^>]*>/,
+
+        // JSX component tags
+        /<[A-Z][A-Za-z0-9]*\b/,
+
+        // CSS blocks
+        /[.#]?[a-zA-Z0-9_-]+\s*\{[^}]*:[^}]*\}/,
+
+        // Common JSX / HTML attributes
+        /\b(className|class|id|onClick|style|src|alt|href)=/,
+
+        // CSS properties
+        /\b(display|flex|grid|margin|padding|color|background|align-items)\s*:/
+    ];
+
+    return patterns.some(pattern => pattern.test(text));
+};
+
+export const validateCodeInput = (code: string): string | null => {
+    const trimmed = code.trim();
+    if (trimmed.length < MIN_CODE_LENGTH) {
+        return ERROR_TYPES.SHORT_CODE;
+    }
+    if (!looksLikeUICode(code)) {
+        return ERROR_TYPES.INVALID_CODE;
+    }
+    return null;
+};
+
+export const validateImageInput = (file: File): Promise<string | null> => {
+    return new Promise((resolve) => {
+        if (file.size < 5000) {
+            resolve(ERROR_TYPES.IMG_TOO_SMALL);
+            return;
+        }
+        const img = new Image();
+        const url = URL.createObjectURL(file);
+        img.src = url;
+        img.onload = () => {
+            URL.revokeObjectURL(url);
+
+            if (img.width < 200 || img.height < 200) {
+                resolve(ERROR_TYPES.IMG_DIMENSIONS_TOO_SMALL);
+                return;
+            }
+
+            resolve(null);
+        };
+        img.onerror = () => {
+            URL.revokeObjectURL(url);
+            resolve(ERROR_TYPES.INVALID_IMG);
+        };
+    });
 };
