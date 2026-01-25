@@ -12,47 +12,90 @@ Built with Next.js • Tailwind CSS • OpenRouter AI • TypeScript
 
 ---
 
+## Screenshots TODO [MOCKUPS]
+
+---
+
 ## What It Does
 
-- Analyze frontend UI code and screenshots using AI
-- Provides feedback across UI/UX, accessibility, and code quality
-- Supports both code input and image-based UI review
-- Prevents duplicate requests with smart input change detection
-- Smooth loading states and product-style UI experience
+AI UI Reviewer analyzes frontend code snippets and UI screenshots to provide actionable feedback across three areas: visual design, accessibility, and code quality.
+
+The app uses a multi-stage processing pipeline designed to mirror real-world AI product patterns:
+
+### Input Handling
+- Accepts JSX, HTML, and CSS code for UI review
+- Accepts UI screenshots for visual analysis
+- Supports keyboard shortcuts and real-time preview
+
+### Smart Input Validation
+- Performs frontend checks to block low-quality or invalid inputs
+- Uses server-side AI validation to confirm inputs are actually UI-related
+- Prevents non-frontend code and non-UI images from being processed
+- Reduces wasted API usage and improves output reliability
+
+### AI-Powered Review
+- Generates structured feedback focused on UI/UX, accessibility, and implementation quality
+- Sanitizes and normalizes AI output before rendering
+- Ensures consistent response formatting for predictable UI display
+
+### Product-Focused UX
+- Split-pane interface for input and results
+- Loading states with visual feedback
+- Light and dark mode support
+- Error handling with clear user messaging
+
+---
+
+## Architecture Overview
+
+```
+User Input (Code / Image)
+        ↓
+Frontend Validation
+- Basic input checks
+- UI-related heuristics
+        ↓
+Backend Semantic Validation (AI)
+- Confirms input is UI-related
+- Blocks non-frontend code and non-UI images
+        ↓
+AI Review Generation
+- UI/UX feedback
+- Accessibility analysis
+- Code quality suggestions
+        ↓
+Response Sanitization
+- Output cleaning
+- JSON normalization
+        ↓
+Frontend Rendering
+- Structured result display
+- Error handling and loading states
+```
+---
+
+## Features
+- Code and image-based UI review support
+- AI-powered semantic input validation
+- Frontend and backend input quality checks
+- Structured review output (UI, Accessibility, Code Quality)
+- Keyboard shortcut submission support
+- Split-view layout for input and results
+- Light and dark mode toggle
+- Loading states and skeleton UI feedback
+- Error handling with user-friendly messaging
+- Deployed with environment-based API configuration
 
 ---
 
 ## Tech Stack
+- Next.js (App Router) — frontend framework and API routes
+- React + TypeScript — UI development and type safety
+- Tailwind CSS — utility-first styling system
+- OpenRouter API (GPT-4o Mini) — text and vision model used for semantic validation and UI review generation
+- Vercel — deployment and hosting
+- Custom Validation Pipeline — frontend heuristics + backend semantic checks
 
-Frontend:
-- Next.js (App Router)
-- React
-- TypeScript
-- Tailwind CSS
-
-Backend:
-- Next.js API Routes
-- OpenRouter AI API
-    - `mistralai/mistral-7b-instruct` for text inputs 
-    - `openai/gpt-4o-mini` for image inputs 
-
-Other:
-- Vercel Deployment
-- Environment variable configuration
-
----
-
-## Key Features
-
-- Split-pane responsive layout (desktop & mobile)
-- Loading skeletons and spinners
-- Disabled state handling and tooltips
-- Input caching to prevent duplicate reviews
-- Image-to-base64 conversion for AI processing
-- Error handling and fallback UI states
-
----
-## Screenshots TODO
 ---
 
 ## Local Setup
@@ -72,4 +115,4 @@ Other:
 - Dark / light theme toggle
 - Export reviews to markdown or PDF
 - Copy review button
-- Add toast notification
+- Add toast notifications
