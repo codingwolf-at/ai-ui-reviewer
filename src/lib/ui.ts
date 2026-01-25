@@ -75,7 +75,7 @@ export const validateCodeInput = (code: string): string | null => {
         return ERROR_TYPES.SHORT_CODE;
     }
     if (!looksLikeUICode(code)) {
-        return ERROR_TYPES.INVALID_CODE;
+        return ERROR_TYPES.NON_UI_CODE;
     }
     return null;
 };
@@ -83,7 +83,7 @@ export const validateCodeInput = (code: string): string | null => {
 export const validateImageInput = (file: File): Promise<string | null> => {
     return new Promise((resolve) => {
         if (file.size < 5000) {
-            resolve(ERROR_TYPES.IMG_TOO_SMALL);
+            resolve(ERROR_TYPES.IMAGE_TOO_SMALL);
             return;
         }
         const img = new Image();
@@ -93,7 +93,7 @@ export const validateImageInput = (file: File): Promise<string | null> => {
             URL.revokeObjectURL(url);
 
             if (img.width < 200 || img.height < 200) {
-                resolve(ERROR_TYPES.IMG_DIMENSIONS_TOO_SMALL);
+                resolve(ERROR_TYPES.IMAGE_DIMENSIONS_TOO_SMALL);
                 return;
             }
 
@@ -101,7 +101,7 @@ export const validateImageInput = (file: File): Promise<string | null> => {
         };
         img.onerror = () => {
             URL.revokeObjectURL(url);
-            resolve(ERROR_TYPES.INVALID_IMG);
+            resolve(ERROR_TYPES.NON_UI_IMAGE);
         };
     });
 };

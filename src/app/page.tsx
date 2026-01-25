@@ -97,7 +97,7 @@ export default function Home() {
         }
         if (inputMode === INPUT_TYPES.IMG) {
             if (!imageFile) {
-                setError(ERROR_TYPES.INVALID_IMG);
+                setError(ERROR_TYPES.NON_UI_IMAGE);
                 return;
             }
             const errorType = await validateImageInput(imageFile);
@@ -112,20 +112,19 @@ export default function Home() {
     const submitReview = async () => {
         setLoading(true);
         const startTime = Date.now();
-        try {
-            const response =
-                inputMode === INPUT_TYPES.IMG
-                    ? await reviewImage(imageFile!)
-                    : await reviewCode(code);
-
-            setResult(response);
-        } catch {
-            setError(ERROR_TYPES.API);
-        } finally {
-            await enforceMinDelay(startTime);
-            setLoading(false);
-            setLastReviewedKey(getCurrentInputKey(inputMode, code, imageFile));
+        const response =
+            inputMode === INPUT_TYPES.IMG
+                ? await reviewImage(imageFile!)
+                : await reviewCode(code);
+        
+        if (response.success) {
+            setResult(response.data);
+        } else {
+            setError(response.error);
         }
+        await enforceMinDelay(startTime);
+        setLoading(false);
+        setLastReviewedKey(getCurrentInputKey(inputMode, code, imageFile));
     };
 
     const clearInput = () => {
