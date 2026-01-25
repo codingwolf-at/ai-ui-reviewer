@@ -6,13 +6,11 @@ Built with Next.js • Tailwind CSS • OpenRouter AI • TypeScript
 
 ---
 
-## Live Demo
+## Demo
+
+https://github.com/user-attachments/assets/5b61a8c7-eed8-47c6-8bda-40e2095e04c0
 
 👉 https://ai-ui-reviewer.vercel.app
-
----
-
-## Screenshots TODO [MOCKUPS]
 
 ---
 
