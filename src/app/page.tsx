@@ -70,10 +70,10 @@ export default function Home() {
     }, [inputMode, handleShortcutSubmit, isReviewBtnDisabled]);
 
     const disabledTooltipText = useMemo(() => {
-        if ((currentKey === lastReviewedKey) && !error) {
+        if ((currentKey === lastReviewedKey) && !error && !loading) {
             return 'No changes detected. Please update your input before reviewing again.'
         } return ""
-    }, [lastReviewedKey, currentKey, error])
+    }, [lastReviewedKey, currentKey, error, loading])
 
     const dynamicHelpText = useMemo(() => {
         return `Press ${deviceInfo.isWindows ? 'Ctrl + Enter' : '⌘ + Enter'} to review `
@@ -140,6 +140,7 @@ export default function Home() {
 
     const handleTabs = (newTab: string) => {
         setResult(null);
+        setError(null);
         if (newTab === INPUT_TYPES.CODE) {
             setImageFile(null)
         } else {
@@ -147,9 +148,6 @@ export default function Home() {
         }
         setInputMode(newTab);
     };
-
-    // TODO: Add a short demo GIF or screenshot in README {mockups}.
-    // TODO: fine tune prompt, current it gives suggestions which are already in the code
 
     return (
         <main className="max-w-5xl mx-auto px-6 py-8 space-y-8">

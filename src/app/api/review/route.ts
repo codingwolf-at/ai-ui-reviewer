@@ -1,4 +1,6 @@
 import { NextResponse } from "next/server";
+// types
+import { AIResponse, ChatMessage } from "./types";
 // helpers
 import { buildCodeReviewPrompt, buildCodeValidationPrompt, buildImageReviewPrompt, buildImageValidationPrompt, callAI, cleanText, validateInput } from "./helpers";
 
@@ -52,7 +54,7 @@ export async function POST(req: Request) {
             }
         }
 
-        const messages =
+        const messages: ChatMessage[] =
             type === "image"
                 ? [
                     { role: "system", content: buildImageReviewPrompt() },
@@ -69,7 +71,7 @@ export async function POST(req: Request) {
                     { role: "user", content: `Review this UI code:\n${code}` }
                 ];
 
-        const reviewRes = await callAI({
+        const reviewRes: AIResponse = await callAI({
             messages,
             temperature: 0.2,
             max_tokens: 500

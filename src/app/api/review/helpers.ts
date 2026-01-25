@@ -1,3 +1,4 @@
+import { AIResponse, ChatMessage } from "./types";
 import { AI_MODEL, OPENROUTER_API } from "./constants";
 
 export const cleanText = (text: string) => {
@@ -88,7 +89,13 @@ Return ONLY valid JSON:
 }
 `;
 
-export const callAI = async (payload: any) => {
+type CallAIPayload = {
+    messages: ChatMessage[];
+    temperature?: number;
+    max_tokens?: number;
+};
+
+export const callAI = async (payload: CallAIPayload) => {
 
     const res = await fetch(OPENROUTER_API, {
         method: "POST",
@@ -113,8 +120,8 @@ export const callAI = async (payload: any) => {
     return res.json();
 };
 
-export const validateInput = async (messages) => {
-    const res = await callAI({ messages });
+export const validateInput = async (messages: ChatMessage[]) => {
+    const res: AIResponse = await callAI({ messages });
     const verdict = res.choices?.[0]?.message?.content
         ?.trim()
         .toUpperCase();
