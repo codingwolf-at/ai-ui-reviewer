@@ -11,7 +11,7 @@ export const INPUT_TABS = [
 export const MIN_CODE_LENGTH = 20;
 
 export const ERROR_TYPES = {
-    API: 'api',
+    API: 'api_failed',
     NON_UI_CODE: 'non_ui_code',
     NON_UI_IMAGE: 'non_ui_image',
     SHORT_CODE: 'short_code',

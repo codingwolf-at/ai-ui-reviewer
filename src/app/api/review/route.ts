@@ -120,7 +120,7 @@ export async function POST(req: Request) {
     } catch (error) {
         console.error("AI ERROR:", error);
         return NextResponse.json(
-            { error: "ai_failed" },
+            { error: "api_failed" },
             { status: 500 }
         );
     }

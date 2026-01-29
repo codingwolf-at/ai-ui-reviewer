@@ -22,7 +22,10 @@ export const getAIReview = async (payload: ReviewRequest): Promise<ReviewApiResp
         };
     } catch (error) {
         console.error("Review API error", error);
-        return null;
+        return {
+            success: false,
+            error: ERROR_TYPES.API
+        };
     }
 };
 
