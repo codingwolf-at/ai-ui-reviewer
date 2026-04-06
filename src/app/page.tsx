@@ -55,7 +55,7 @@ export default function Home() {
         handleReviewRequest();
     };
 
-    useEffect(() => {
+    useEffect(function handleKeyDownForImageInput() {
         if (inputMode !== INPUT_TYPES.IMG) return;
         const handleKeyDown = (e: KeyboardEvent) => {
             if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
@@ -116,7 +116,7 @@ export default function Home() {
             inputMode === INPUT_TYPES.IMG
                 ? await reviewImage(imageFile!)
                 : await reviewCode(code);
-        
+
         if (response.success) {
             setResult(response.data);
         } else {

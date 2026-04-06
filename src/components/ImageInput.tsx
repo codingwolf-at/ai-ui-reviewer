@@ -15,7 +15,7 @@ const ImageInput = ({ selectedFile, onSelect, disabled }: ImageInputProps) => {
         return URL.createObjectURL(selectedFile);
     }, [selectedFile]);
 
-    useEffect(() => {
+    useEffect(function handleRevokeObjectURL() {
         return () => {
             if (previewUrl) {
                 URL.revokeObjectURL(previewUrl);
