@@ -1,4 +1,5 @@
 
+import { gooeyToast } from "goey-toast";
 import { ERROR_TYPES, INPUT_TYPES, MIN_CODE_LENGTH } from "@/constants/ui";
 
 export const enforceMinDelay = async (
@@ -105,3 +106,5 @@ export const validateImageInput = (file: File): Promise<string | null> => {
         };
     });
 };
+
+export const showToast = (msg: string) => gooeyToast.success(msg, { showTimestamp: false, borderColor: '#66BB6B' });

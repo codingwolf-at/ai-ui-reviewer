@@ -113,4 +113,4 @@ Frontend Rendering
 - Dark / light theme toggle
 - Export reviews to markdown or PDF
 - Copy review button
-- Add toast notifications
+- ~~Add toast notifications~~ - Done

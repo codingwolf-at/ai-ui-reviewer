@@ -1,5 +1,6 @@
 "use client";
 
+import { showToast } from "@/lib/ui";
 import { useEffect, useMemo } from "react";
 
 type ImageInputProps = {
@@ -36,7 +37,10 @@ const ImageInput = ({ selectedFile, onSelect, disabled }: ImageInputProps) => {
                     disabled={disabled}
                     onChange={(e) => {
                         const file = e.target.files?.[0];
-                        if (file) onSelect(file);
+                        if (file) {
+                            onSelect(file);
+                            showToast(`${file.name} uploaded!`);
+                        }
                     }}
                 />
                 <p className="text-sm text-gray-400">

@@ -1,5 +1,7 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
+// styles
+import 'goey-toast/styles.css';
 // constants
 import { ERROR_MSGS, ERROR_TYPES, INPUT_TABS, INPUT_TYPES } from "@/constants/ui";
 // types
@@ -8,10 +10,11 @@ import { ReviewResult } from "@/types/review";
 import useDeviceInfo from "@/hooks/useDeviceInfo";
 // helpers
 import { reviewCode, reviewImage } from "@/lib/review";
-import { enforceMinDelay, getCurrentInputKey, validateCodeInput, validateImageInput } from "@/lib/ui";
+import { enforceMinDelay, getCurrentInputKey, showToast, validateCodeInput, validateImageInput } from "@/lib/ui";
 // components
 import Tabs from "@/components/Tabs";
 import Button from "@/components/Button";
+import { GooeyToaster } from "goey-toast";
 import Tooltip from "@/components/Tooltip";
 import CodeInput from "@/components/CodeInput";
 import ReviewCard from "@/components/ReviewCard";
@@ -128,6 +131,7 @@ export default function Home() {
     };
 
     const clearInput = () => {
+        showToast(`${inputMode === INPUT_TYPES.CODE ? 'Code' : 'Image'} input cleared!`);
         if (inputMode === INPUT_TYPES.CODE) {
             setCode("");
         } else {
@@ -267,6 +271,7 @@ export default function Home() {
                     )}
                 </section>
             </div>
+            <GooeyToaster position="top-right" spring={false} duration={4000} theme="dark" />
         </main>
     );
 }
