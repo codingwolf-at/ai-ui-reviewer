@@ -112,8 +112,7 @@ export const callAI = async (payload: CallAIPayload) => {
     });
 
     if (!res.ok) {
-        const err = await res.text();
-        console.error("OpenRouter RAW ERROR:", err);
+        console.error(`OpenRouter API request failed with status: ${res.status}`);
         throw new Error("AI request failed");
     }
 
